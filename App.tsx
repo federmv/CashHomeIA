@@ -26,13 +26,13 @@ function App() {
     const [currentView, setCurrentView] = useState<View>(View.DASHBOARD);
 
     // For swipe navigation
-    const touchStartX = useRef(0);
-    const touchEndX = useRef(0);
-    const touchStartY = useRef(0);
-    const touchEndY = useRef(0);
+    const touchStartPoint = useRef({ x: 0, y: 0 });
+    const touchEndPoint = useRef({ x: 0, y: 0 });
+    const gestureState = useRef<'none' | 'horizontal' | 'vertical'>('none');
     const [animationClass, setAnimationClass] = useState('');
     const viewOrder = [View.DASHBOARD, View.INVOICES, View.INCOME];
     const minSwipeDistance = 50;
+    const gestureDetectionThreshold = 10; // Pixels to move before classifying gesture
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -132,50 +132,54 @@ function App() {
 
     // Swipe handlers
     const handleTouchStart = (e: React.TouchEvent) => {
-        touchEndX.current = 0;
-        touchEndY.current = 0;
-        touchStartX.current = e.targetTouches[0].clientX;
-        touchStartY.current = e.targetTouches[0].clientY;
+        gestureState.current = 'none';
+        touchStartPoint.current = { x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY };
+        touchEndPoint.current = { x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY };
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
-        touchEndX.current = e.targetTouches[0].clientX;
-        touchEndY.current = e.targetTouches[0].clientY;
+        touchEndPoint.current = { x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY };
+
+        if (gestureState.current === 'none') {
+            const deltaX = Math.abs(touchStartPoint.current.x - touchEndPoint.current.x);
+            const deltaY = Math.abs(touchStartPoint.current.y - touchEndPoint.current.y);
+
+            if (deltaX > gestureDetectionThreshold || deltaY > gestureDetectionThreshold) {
+                if (deltaX > deltaY) {
+                    gestureState.current = 'horizontal';
+                } else {
+                    gestureState.current = 'vertical';
+                }
+            }
+        }
+
+        if (gestureState.current === 'horizontal') {
+            e.preventDefault();
+        }
     };
 
     const handleTouchEnd = () => {
-        if (touchStartX.current === 0 || touchEndX.current === 0) return;
+        if (gestureState.current !== 'horizontal') {
+            return;
+        }
 
-        const distanceX = touchStartX.current - touchEndX.current;
-        const distanceY = touchStartY.current - touchEndY.current;
+        const distanceX = touchStartPoint.current.x - touchEndPoint.current.x;
 
-        // Check if the swipe is long enough
-        const isSwipeLongEnough = Math.abs(distanceX) > minSwipeDistance;
-        
-        // Check if the swipe is predominantly horizontal.
-        // The horizontal distance must be at least twice the vertical distance.
-        // This prevents vertical scrolling from triggering a page change.
-        const isHorizontalSwipe = Math.abs(distanceX) > Math.abs(distanceY) * 2;
-
-        if (isSwipeLongEnough && isHorizontalSwipe) {
+        if (Math.abs(distanceX) > minSwipeDistance) {
             const currentIndex = viewOrder.indexOf(currentView);
             
-            if (distanceX > 0) { // Swiped left, go to next view
+            if (distanceX > 0) { // Swiped left
                 const nextIndex = (currentIndex + 1) % viewOrder.length;
                 setCurrentView(viewOrder[nextIndex]);
                 setAnimationClass('animate-slide-in-right');
-            } else { // Swiped right, go to previous view
+            } else { // Swiped right
                 const prevIndex = (currentIndex - 1 + viewOrder.length) % viewOrder.length;
                 setCurrentView(viewOrder[prevIndex]);
                 setAnimationClass('animate-slide-in-left');
             }
         }
         
-        // Reset coordinates for the next touch interaction in any case.
-        touchStartX.current = 0;
-        touchEndX.current = 0;
-        touchStartY.current = 0;
-        touchEndY.current = 0;
+        gestureState.current = 'none';
     };
 
     useEffect(() => {
