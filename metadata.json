@@ -1,0 +1,5 @@
+{
+  "name": "CashHome - AI Invoice Manager",
+  "description": "A modern web app to automatically manage invoices using AI. Upload files, and the AI extracts all relevant data. Features include a visual analytics dashboard and a conversational AI assistant to help you understand your finances.",
+  "requestFramePermissions": []
+}
