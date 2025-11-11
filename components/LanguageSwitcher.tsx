@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GlobeIcon } from './icons/GlobeIcon';
 
 const languages = {
     en: { nativeName: 'English' },
@@ -20,10 +19,11 @@ const LanguageSwitcher: React.FC = () => {
         <div className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors duration-300 text-brand-text-secondary hover:bg-brand-secondary hover:text-white"
+                // Responsive styling: square on mobile, wider on desktop
+                className="bg-brand-secondary border border-brand-secondary/50 text-white font-semibold uppercase text-sm rounded-lg transition hover:bg-brand-primary flex items-center justify-center h-10 w-10 sm:w-auto sm:px-4 flex-shrink-0"
             >
-                <GlobeIcon />
-                <span className="font-semibold uppercase text-sm">{i18n.language}</span>
+                {/* No icon, just the language code */}
+                {i18n.language}
             </button>
             {isOpen && (
                 <div 
