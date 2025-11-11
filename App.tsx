@@ -28,6 +28,8 @@ function App() {
     // For swipe navigation
     const touchStartX = useRef(0);
     const touchEndX = useRef(0);
+    const touchStartY = useRef(0);
+    const touchEndY = useRef(0);
     const [animationClass, setAnimationClass] = useState('');
     const viewOrder = [View.DASHBOARD, View.INVOICES, View.INCOME];
     const minSwipeDistance = 50;
@@ -131,23 +133,37 @@ function App() {
     // Swipe handlers
     const handleTouchStart = (e: React.TouchEvent) => {
         touchEndX.current = 0;
+        touchEndY.current = 0;
         touchStartX.current = e.targetTouches[0].clientX;
+        touchStartY.current = e.targetTouches[0].clientY;
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
         touchEndX.current = e.targetTouches[0].clientX;
+        touchEndY.current = e.targetTouches[0].clientY;
     };
 
     const handleTouchEnd = () => {
         if (touchStartX.current === 0 || touchEndX.current === 0) return;
 
-        const distance = touchStartX.current - touchEndX.current;
-        const isLeftSwipe = distance > minSwipeDistance;
-        const isRightSwipe = distance < -minSwipeDistance;
+        const distanceX = touchStartX.current - touchEndX.current;
+        const distanceY = touchStartY.current - touchEndY.current;
 
-        if (isLeftSwipe || isRightSwipe) {
+        // Reset for next interaction
+        touchStartX.current = 0;
+        touchEndX.current = 0;
+        touchStartY.current = 0;
+        touchEndY.current = 0;
+
+        // Check for a valid horizontal swipe: horizontal distance must be greater than vertical distance
+        // AND greater than the minimum swipe distance. This prevents vertical scrolling from being treated as a swipe.
+        const isHorizontalSwipe = Math.abs(distanceX) > Math.abs(distanceY);
+        const isSwipeLongEnough = Math.abs(distanceX) > minSwipeDistance;
+
+        if (isHorizontalSwipe && isSwipeLongEnough) {
             const currentIndex = viewOrder.indexOf(currentView);
-            if (isLeftSwipe) { // Swiped left, go to next view
+            
+            if (distanceX > 0) { // Swiped left, go to next view
                 const nextIndex = (currentIndex + 1) % viewOrder.length;
                 setCurrentView(viewOrder[nextIndex]);
                 setAnimationClass('animate-slide-in-right');
@@ -157,8 +173,6 @@ function App() {
                 setAnimationClass('animate-slide-in-left');
             }
         }
-        touchStartX.current = 0;
-        touchEndX.current = 0;
     };
 
     useEffect(() => {
