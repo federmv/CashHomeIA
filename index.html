@@ -28,6 +28,20 @@
             },
             boxShadow: {
               'glow': '0 0 15px rgba(62, 123, 250, 0.4)',
+            },
+            animation: {
+              'slide-in-left': 'slide-in-left 0.4s ease-out forwards',
+              'slide-in-right': 'slide-in-right 0.4s ease-out forwards',
+            },
+            keyframes: {
+              'slide-in-left': {
+                '0%': { transform: 'translateX(-30px)', opacity: '0' },
+                '100%': { transform: 'translateX(0)', opacity: '1' },
+              },
+              'slide-in-right': {
+                '0%': { transform: 'translateX(30px)', opacity: '0' },
+                '100%': { transform: 'translateX(0)', opacity: '1' },
+              },
             }
           }
         }

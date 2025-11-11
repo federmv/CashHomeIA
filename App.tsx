@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { app } from './firebaseConfig';
 import * as firestoreService from './services/firestoreService';
@@ -24,6 +24,13 @@ function App() {
     const [invoices, setInvoices] = useState<Invoice[]>([]);
     const [income, setIncome] = useState<Income[]>([]);
     const [currentView, setCurrentView] = useState<View>(View.DASHBOARD);
+
+    // For swipe navigation
+    const touchStartX = useRef(0);
+    const touchEndX = useRef(0);
+    const [animationClass, setAnimationClass] = useState('');
+    const viewOrder = [View.DASHBOARD, View.INVOICES, View.INCOME];
+    const minSwipeDistance = 50;
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -121,6 +128,53 @@ function App() {
         );
     }, [user, t]);
 
+    // Swipe handlers
+    const handleTouchStart = (e: React.TouchEvent) => {
+        touchEndX.current = 0;
+        touchStartX.current = e.targetTouches[0].clientX;
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        touchEndX.current = e.targetTouches[0].clientX;
+    };
+
+    const handleTouchEnd = () => {
+        if (touchStartX.current === 0 || touchEndX.current === 0) return;
+
+        const distance = touchStartX.current - touchEndX.current;
+        const isLeftSwipe = distance > minSwipeDistance;
+        const isRightSwipe = distance < -minSwipeDistance;
+
+        if (isLeftSwipe || isRightSwipe) {
+            const currentIndex = viewOrder.indexOf(currentView);
+            if (isLeftSwipe) { // Swiped left, go to next view
+                const nextIndex = (currentIndex + 1) % viewOrder.length;
+                setCurrentView(viewOrder[nextIndex]);
+                setAnimationClass('animate-slide-in-right');
+            } else { // Swiped right, go to previous view
+                const prevIndex = (currentIndex - 1 + viewOrder.length) % viewOrder.length;
+                setCurrentView(viewOrder[prevIndex]);
+                setAnimationClass('animate-slide-in-left');
+            }
+        }
+        touchStartX.current = 0;
+        touchEndX.current = 0;
+    };
+
+    useEffect(() => {
+        if (animationClass) {
+            const timer = setTimeout(() => setAnimationClass(''), 400); // Animation duration
+            return () => clearTimeout(timer);
+        }
+    }, [animationClass]);
+
+    const handleHeaderNavigation = (view: View) => {
+        if (view !== currentView) {
+            setAnimationClass('');
+            setCurrentView(view);
+        }
+    };
+
     if (isLoading) {
         return <FullScreenLoader />;
     }
@@ -130,7 +184,7 @@ function App() {
     }
 
     return (
-        <div className="min-h-screen bg-brand-primary font-sans">
+        <div className="min-h-screen bg-brand-primary font-sans overflow-hidden">
             <Toaster position="top-center" toastOptions={{
                 style: {
                     background: '#1E1E3F',
@@ -141,9 +195,14 @@ function App() {
             <Header
                 user={user}
                 currentView={currentView}
-                setCurrentView={setCurrentView}
+                setCurrentView={handleHeaderNavigation}
             />
-            <main className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+            <main
+                className={`p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto ${animationClass}`}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+            >
                 {currentView === View.DASHBOARD && <Dashboard invoices={invoices} income={income} />}
                 {currentView === View.INVOICES && (
                     <div className="space-y-8">
