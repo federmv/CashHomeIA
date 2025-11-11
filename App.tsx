@@ -149,18 +149,15 @@ function App() {
         const distanceX = touchStartX.current - touchEndX.current;
         const distanceY = touchStartY.current - touchEndY.current;
 
-        // Reset for next interaction
-        touchStartX.current = 0;
-        touchEndX.current = 0;
-        touchStartY.current = 0;
-        touchEndY.current = 0;
-
-        // Check for a valid horizontal swipe: horizontal distance must be greater than vertical distance
-        // AND greater than the minimum swipe distance. This prevents vertical scrolling from being treated as a swipe.
-        const isHorizontalSwipe = Math.abs(distanceX) > Math.abs(distanceY);
+        // Check if the swipe is long enough
         const isSwipeLongEnough = Math.abs(distanceX) > minSwipeDistance;
+        
+        // Check if the swipe is predominantly horizontal.
+        // The horizontal distance must be at least twice the vertical distance.
+        // This prevents vertical scrolling from triggering a page change.
+        const isHorizontalSwipe = Math.abs(distanceX) > Math.abs(distanceY) * 2;
 
-        if (isHorizontalSwipe && isSwipeLongEnough) {
+        if (isSwipeLongEnough && isHorizontalSwipe) {
             const currentIndex = viewOrder.indexOf(currentView);
             
             if (distanceX > 0) { // Swiped left, go to next view
@@ -173,6 +170,12 @@ function App() {
                 setAnimationClass('animate-slide-in-left');
             }
         }
+        
+        // Reset coordinates for the next touch interaction in any case.
+        touchStartX.current = 0;
+        touchEndX.current = 0;
+        touchStartY.current = 0;
+        touchEndY.current = 0;
     };
 
     useEffect(() => {
