@@ -23,7 +23,11 @@ const InvoiceList: React.FC<InvoiceListProps> = ({ invoices, deleteInvoice, addI
     const [invoiceToEdit, setInvoiceToEdit] = useState<Invoice | null>(null);
 
     const formatCurrency = useMemo(() => (num: number) => {
-        return new Intl.NumberFormat(i18n.language, { style: 'currency', currency: 'USD' }).format(num);
+        return new Intl.NumberFormat(i18n.language, {
+            style: 'decimal',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(num);
     }, [i18n.language]);
 
     const formatDate = useMemo(() => (dateString: string) => {

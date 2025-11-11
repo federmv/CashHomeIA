@@ -21,7 +21,11 @@ const Dashboard: React.FC<DashboardProps> = ({ invoices, income }) => {
     const [activeIndex, setActiveIndex] = useState(0);
 
     const formatCurrency = useMemo(() => (value: number) => {
-        return new Intl.NumberFormat(i18n.language, { style: 'currency', currency: 'USD' }).format(value);
+        return new Intl.NumberFormat(i18n.language, { 
+            style: 'decimal', 
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(value);
     }, [i18n.language]);
 
     const yAxisFormatter = useMemo(() => (value: number) => {

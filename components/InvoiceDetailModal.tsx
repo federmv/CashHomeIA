@@ -13,10 +13,9 @@ const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({ invoice, onClos
 
     const formatCurrency = useMemo(() => (num: number) => {
         return new Intl.NumberFormat(i18n.language, {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
+            style: 'decimal',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
         }).format(num);
     }, [i18n.language]);
 

@@ -21,7 +21,11 @@ const IncomeList: React.FC<IncomeListProps> = ({ income, deleteIncome, addIncome
     const [incomeToEdit, setIncomeToEdit] = useState<Income | null>(null);
 
     const formatCurrency = useMemo(() => (num: number) => {
-        return new Intl.NumberFormat(i18n.language, { style: 'currency', currency: 'USD' }).format(num);
+        return new Intl.NumberFormat(i18n.language, {
+            style: 'decimal',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(num);
     }, [i18n.language]);
 
     const formatDate = useMemo(() => (dateString: string) => {
