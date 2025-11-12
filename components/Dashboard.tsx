@@ -2,9 +2,6 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { AreaChart, Area, Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Sector, Tooltip, XAxis, YAxis } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { Invoice, Income } from '../types';
-import { getDashboardInsights } from '../services/geminiService';
-import { LightbulbIcon } from './icons/LightbulbIcon';
-import { SpinnerIcon } from './icons/SpinnerIcon';
 
 
 interface DashboardProps {
@@ -16,8 +13,6 @@ const COLORS = ['#3E7BFA', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#3B82F6'
 
 const Dashboard: React.FC<DashboardProps> = ({ invoices, income }) => {
     const { t, i18n } = useTranslation();
-    const [insights, setInsights] = useState('');
-    const [isInsightsLoading, setIsInsightsLoading] = useState(true);
     const [activeIndex, setActiveIndex] = useState(0);
 
     const formatCurrency = useMemo(() => (value: number) => {
@@ -77,21 +72,6 @@ const Dashboard: React.FC<DashboardProps> = ({ invoices, income }) => {
         </g>
       );
     };
-
-    useEffect(() => {
-        const fetchInsights = async () => {
-            setIsInsightsLoading(true);
-            try {
-                const result = await getDashboardInsights(invoices, income, t, i18n.language);
-                setInsights(result);
-            } catch (error) {
-                setInsights(t('dashboard.insightsError'));
-            } finally {
-                setIsInsightsLoading(false);
-            }
-        };
-        fetchInsights();
-    }, [invoices, income, t, i18n.language]);
 
     const stats = useMemo(() => {
         const totalSpent = invoices.reduce((sum, inv) => sum + inv.total, 0);
@@ -168,22 +148,6 @@ const Dashboard: React.FC<DashboardProps> = ({ invoices, income }) => {
                     <h3 className="text-brand-text-secondary text-lg">{t('dashboard.totalInvoices')}</h3>
                     <p className="text-4xl font-bold text-white">{stats.invoiceCount}</p>
                 </div>
-            </div>
-
-             <div className="bg-brand-secondary p-6 rounded-xl border border-brand-accent/20">
-                <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-3">
-                    <LightbulbIcon />
-                    {t('dashboard.aiInsights')}
-                </h3>
-                {isInsightsLoading ? (
-                     <div className="flex items-center justify-center h-24">
-                        <SpinnerIcon />
-                    </div>
-                ) : (
-                    <div className="text-brand-text-secondary space-y-2 text-sm whitespace-pre-wrap">
-                        {insights.split('\n').map((line, index) => <p key={index}>{line}</p>)}
-                    </div>
-                )}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">

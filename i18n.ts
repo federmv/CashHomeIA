@@ -20,13 +20,9 @@ const resources = {
         "totalSpent": "Total Spent",
         "netBalance": "Net Balance",
         "totalInvoices": "Total Invoices",
-        "aiInsights": "AI Insights",
         "cashFlow": "Cash Flow Over Time",
         "spendingByCategory": "Spending by Category",
-        "noSpendingData": "No spending data available.",
-        "insightsLoading": "Generating AI insights...",
-        "insightsError": "Could not generate AI insights at this time.",
-        "insightsEmpty": "No data yet. Upload invoices and add income to see AI insights!"
+        "noSpendingData": "No spending data available."
       },
       "invoices": {
         "title": "All Invoices",
@@ -160,7 +156,6 @@ const resources = {
       },
       "gemini": {
         "analyzeInvoicePrompt": "Analyze this invoice in {{language}} and extract the provider name, invoice date, subtotal (amount before tax), tax amount, and total amount. Also extract all line items, including a description, quantity, unit price, and line total for each item. Finally, suggest a category for this expense from the following list: [{{categories}}]. The date should be in YYYY-MM-DD format.",
-        "dashboardInsightsPrompt": "Based on the following financial data, generate 2-3 brief, insightful, and encouraging bullet points for a user's dashboard, in {{language}}. Focus on key trends, significant spending categories, or the net balance. Be concise and use a friendly tone.",
         "chatSystemInstruction": "You are CashHome's expert AI accountant. You are friendly, insightful, and help users understand their financial data (invoices and income). Your response must be in {{language}}. Analyze the provided JSON data to answer questions accurately. Provide concise and clear answers. If a question cannot be answered from the data, say so politely. You can answer questions about expenses, income, and net balance/profit.",
         "invoiceAnalysisError": "Failed to analyze the invoice. The AI model could not process the file."
       }
@@ -180,13 +175,9 @@ const resources = {
         "totalSpent": "Gastos Totales",
         "netBalance": "Balance Neto",
         "totalInvoices": "Facturas Totales",
-        "aiInsights": "Análisis IA",
         "cashFlow": "Flujo de Caja",
         "spendingByCategory": "Gastos por Categoría",
-        "noSpendingData": "No hay datos de gastos disponibles.",
-        "insightsLoading": "Generando análisis de IA...",
-        "insightsError": "No se pudo generar el análisis de IA en este momento.",
-        "insightsEmpty": "Aún no hay datos. ¡Sube facturas y añade ingresos para ver análisis de IA!"
+        "noSpendingData": "No hay datos de gastos disponibles."
       },
       "invoices": {
         "title": "Todas las Facturas",
@@ -320,7 +311,6 @@ const resources = {
       },
       "gemini": {
         "analyzeInvoicePrompt": "Analiza esta factura en {{language}} y extrae el nombre del proveedor, la fecha de la factura, el subtotal (monto antes de impuestos), el monto del impuesto y el monto total. Extrae también todos los artículos, incluyendo descripción, cantidad, precio unitario y total de línea para cada uno. Finalmente, sugiere una categoría para este gasto de la siguiente lista: [{{categories}}]. La fecha debe estar en formato AAAA-MM-DD.",
-        "dashboardInsightsPrompt": "Basado en los siguientes datos financieros, genera 2-3 puntos breves, perspicaces y alentadores para el panel de un usuario, en {{language}}. Céntrate en tendencias clave, categorías de gastos significativas o el balance neto. Sé conciso y usa un tono amigable.",
         "chatSystemInstruction": "Eres el experto contable de IA de CashHome. Eres amigable, perspicaz y ayudas a los usuarios a entender sus datos financieros (facturas e ingresos). Tu respuesta debe ser en {{language}}. Analiza los datos JSON proporcionados para responder preguntas con precisión. Ofrece respuestas concisas y claras. Si una pregunta no puede responderse con los datos, dilo amablemente. Puedes responder preguntas sobre gastos, ingresos y balance neto/ganancias.",
         "invoiceAnalysisError": "Fallo al analizar la factura. El modelo de IA no pudo procesar el archivo."
       }

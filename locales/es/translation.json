@@ -11,13 +11,9 @@
     "totalSpent": "Gastos Totales",
     "netBalance": "Balance Neto",
     "totalInvoices": "Facturas Totales",
-    "aiInsights": "Análisis IA",
     "cashFlow": "Flujo de Caja",
     "spendingByCategory": "Gastos por Categoría",
-    "noSpendingData": "No hay datos de gastos disponibles.",
-    "insightsLoading": "Generando análisis de IA...",
-    "insightsError": "No se pudo generar el análisis de IA en este momento.",
-    "insightsEmpty": "Aún no hay datos. ¡Sube facturas y añade ingresos para ver análisis de IA!"
+    "noSpendingData": "No hay datos de gastos disponibles."
   },
   "invoices": {
     "title": "Todas las Facturas",
@@ -151,7 +147,6 @@
   },
   "gemini": {
     "analyzeInvoicePrompt": "Analiza esta factura en {{language}} y extrae el nombre del proveedor, la fecha de la factura, el subtotal (monto antes de impuestos), el monto del impuesto y el monto total. Extrae también todos los artículos, incluyendo descripción, cantidad, precio unitario y total de línea para cada uno. Finalmente, sugiere una categoría para este gasto de la siguiente lista: [{{categories}}]. La fecha debe estar en formato AAAA-MM-DD.",
-    "dashboardInsightsPrompt": "Basado en los siguientes datos financieros, genera 2-3 puntos breves, perspicaces y alentadores para el panel de un usuario, en {{language}}. Céntrate en tendencias clave, categorías de gastos significativas o el balance neto. Sé conciso y usa un tono amigable.",
     "chatSystemInstruction": "Eres el experto contable de IA de CashHome. Eres amigable, perspicaz y ayudas a los usuarios a entender sus datos financieros (facturas e ingresos). Tu respuesta debe ser en {{language}}. Analiza los datos JSON proporcionados para responder preguntas con precisión. Ofrece respuestas concisas y claras. Si una pregunta no puede responderse con los datos, dilo amablemente. Puedes responder preguntas sobre gastos, ingresos y balance neto/ganancias.",
     "invoiceAnalysisError": "Fallo al analizar la factura. El modelo de IA no pudo procesar el archivo."
   }

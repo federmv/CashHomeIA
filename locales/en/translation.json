@@ -11,13 +11,9 @@
     "totalSpent": "Total Spent",
     "netBalance": "Net Balance",
     "totalInvoices": "Total Invoices",
-    "aiInsights": "AI Insights",
     "cashFlow": "Cash Flow Over Time",
     "spendingByCategory": "Spending by Category",
-    "noSpendingData": "No spending data available.",
-    "insightsLoading": "Generating AI insights...",
-    "insightsError": "Could not generate AI insights at this time.",
-    "insightsEmpty": "No data yet. Upload invoices and add income to see AI insights!"
+    "noSpendingData": "No spending data available."
   },
   "invoices": {
     "title": "All Invoices",
@@ -151,7 +147,6 @@
   },
   "gemini": {
     "analyzeInvoicePrompt": "Analyze this invoice in {{language}} and extract the provider name, invoice date, subtotal (amount before tax), tax amount, and total amount. Also extract all line items, including a description, quantity, unit price, and line total for each item. Finally, suggest a category for this expense from the following list: [{{categories}}]. The date should be in YYYY-MM-DD format.",
-    "dashboardInsightsPrompt": "Based on the following financial data, generate 2-3 brief, insightful, and encouraging bullet points for a user's dashboard, in {{language}}. Focus on key trends, significant spending categories, or the net balance. Be concise and use a friendly tone.",
     "chatSystemInstruction": "You are CashHome's expert AI accountant. You are friendly, insightful, and help users understand their financial data (invoices and income). Your response must be in {{language}}. Analyze the provided JSON data to answer questions accurately. Provide concise and clear answers. If a question cannot be answered from the data, say so politely. You can answer questions about expenses, income, and net balance/profit.",
     "invoiceAnalysisError": "Failed to analyze the invoice. The AI model could not process the file."
   }

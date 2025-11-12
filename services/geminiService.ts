@@ -90,39 +90,6 @@ export const analyzeInvoice = async (
     }
 };
 
-export const getDashboardInsights = async (
-    invoices: Invoice[], 
-    income: Income[],
-    t: TFunction,
-    language: string
-): Promise<string> => {
-    if (invoices.length === 0 && income.length === 0) {
-        return t('dashboard.insightsEmpty');
-    }
-
-    try {
-        const ai = getAiClient();
-        const context = `
-        - Invoices represent expenses.
-        - Income represents earnings.
-        Invoice Data: ${JSON.stringify(invoices)}
-        Income Data: ${JSON.stringify(income)}
-        `;
-
-        const prompt = t('gemini.dashboardInsightsPrompt', { language });
-
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: `${prompt}\n\n${context}`,
-        });
-
-        return response.text;
-    } catch (error) {
-        console.error("Error getting dashboard insights from Gemini:", error);
-        return t('dashboard.insightsError');
-    }
-};
-
 export const getChatResponse = async (
     history: ChatMessage[], 
     invoices: Invoice[], 
