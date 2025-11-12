@@ -28,11 +28,9 @@ function App() {
     // For swipe navigation
     const touchStartPoint = useRef({ x: 0, y: 0 });
     const touchEndPoint = useRef({ x: 0, y: 0 });
-    const gestureState = useRef<'none' | 'horizontal' | 'vertical'>('none');
     const [animationClass, setAnimationClass] = useState('');
     const viewOrder = [View.DASHBOARD, View.INVOICES, View.INCOME];
     const minSwipeDistance = 50;
-    const gestureDetectionThreshold = 10; // Pixels to move before classifying gesture
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -130,42 +128,27 @@ function App() {
         );
     }, [user, t]);
 
-    // Swipe handlers
+    // Simplified swipe handlers
     const handleTouchStart = (e: React.TouchEvent) => {
-        gestureState.current = 'none';
+        // Reset and record the starting point of the touch
         touchStartPoint.current = { x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY };
         touchEndPoint.current = { x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY };
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
+        // Continuously update the end point as the finger moves
         touchEndPoint.current = { x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY };
-
-        if (gestureState.current === 'none') {
-            const deltaX = Math.abs(touchStartPoint.current.x - touchEndPoint.current.x);
-            const deltaY = Math.abs(touchStartPoint.current.y - touchEndPoint.current.y);
-
-            if (deltaX > gestureDetectionThreshold || deltaY > gestureDetectionThreshold) {
-                if (deltaX > deltaY) {
-                    gestureState.current = 'horizontal';
-                } else {
-                    gestureState.current = 'vertical';
-                }
-            }
-        }
-
-        if (gestureState.current === 'horizontal') {
-            e.preventDefault();
-        }
     };
 
     const handleTouchEnd = () => {
-        if (gestureState.current !== 'horizontal') {
-            return;
-        }
-
+        // All logic is now handled at the end of the gesture, preventing interference with scrolling.
         const distanceX = touchStartPoint.current.x - touchEndPoint.current.x;
+        const distanceY = touchStartPoint.current.y - touchEndPoint.current.y;
 
-        if (Math.abs(distanceX) > minSwipeDistance) {
+        // A valid swipe is:
+        // 1. Longer than the minimum swipe distance.
+        // 2. Primarily horizontal (more horizontal movement than vertical).
+        if (Math.abs(distanceX) > minSwipeDistance && Math.abs(distanceX) > Math.abs(distanceY)) {
             const currentIndex = viewOrder.indexOf(currentView);
             
             if (distanceX > 0) { // Swiped left
@@ -178,8 +161,7 @@ function App() {
                 setAnimationClass('animate-slide-in-left');
             }
         }
-        
-        gestureState.current = 'none';
+        // No state to reset here, it's handled on the next touchStart.
     };
 
     useEffect(() => {
@@ -219,7 +201,8 @@ function App() {
                 setCurrentView={handleHeaderNavigation}
             />
             <main
-                className={`p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto ${animationClass}`}
+                // The `touch-pan-y` class tells the browser to prioritize vertical scrolling.
+                className={`p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto touch-pan-y ${animationClass}`}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
