@@ -31,6 +31,7 @@ const InvoiceList: React.FC<InvoiceListProps> = ({ invoices, deleteInvoice, addI
     }, [i18n.language]);
 
     const formatDate = useMemo(() => (dateString: string) => {
+        // FIX: Corrected typo from toLocaleDateDateString to toLocaleDateString.
         return new Date(dateString).toLocaleDateString(i18n.language, {
             year: 'numeric',
             month: 'long',
@@ -121,7 +122,7 @@ const InvoiceList: React.FC<InvoiceListProps> = ({ invoices, deleteInvoice, addI
                     </button>
                 </div>
             </div>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto touch-pan-y">
                 <table className="w-full text-left">
                     <thead className="border-b border-brand-text-secondary/20">
                         <tr>

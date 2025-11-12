@@ -108,7 +108,7 @@ const IncomeList: React.FC<IncomeListProps> = ({ income, deleteIncome, addIncome
                     </button>
                 </div>
             </div>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto touch-pan-y">
                 <table className="w-full text-left">
                     <thead className="border-b border-brand-text-secondary/20">
                         <tr>
