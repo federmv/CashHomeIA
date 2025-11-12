@@ -41,7 +41,8 @@ const resources = {
         "actions": "Actions",
         "noInvoices": "No Invoices Yet",
         "noInvoicesDescription": "It looks like your invoice list is empty. Get started by uploading a file or adding an entry manually.",
-        "addNewInvoice": "Add New Invoice"
+        "addNewInvoice": "Add New Invoice",
+        "recurringInfo": "Recurs {{frequency}}"
       },
       "income": {
         "title": "Income",
@@ -89,7 +90,14 @@ const resources = {
         "incomeSource": "Income Source",
         "amount": "Amount",
         "descriptionOptional": "Description (Optional)",
-        "saveIncome": "Save Income"
+        "saveIncome": "Save Income",
+        "setAsRecurring": "Set as recurring",
+        "frequency": "Frequency",
+        "monthly": "Monthly",
+        "yearly": "Yearly",
+        "startDate": "Start Date",
+        "recurringInfoTitle": "Recurring:",
+        "recurringInfoText": "{{frequency}} starting {{date}}"
       },
       "login": {
         "subtitle": "Your AI-Powered Financial Hub",
@@ -196,7 +204,8 @@ const resources = {
         "actions": "Acciones",
         "noInvoices": "Aún no hay Facturas",
         "noInvoicesDescription": "Tu lista de facturas está vacía. Empieza subiendo un archivo o añadiendo una entrada manualmente.",
-        "addNewInvoice": "Añadir Nueva Factura"
+        "addNewInvoice": "Añadir Nueva Factura",
+        "recurringInfo": "Recurrente {{frequency}}"
       },
       "income": {
         "title": "Ingresos",
@@ -244,7 +253,14 @@ const resources = {
         "incomeSource": "Fuente de Ingreso",
         "amount": "Monto",
         "descriptionOptional": "Descripción (Opcional)",
-        "saveIncome": "Guardar Ingreso"
+        "saveIncome": "Guardar Ingreso",
+        "setAsRecurring": "Establecer como recurrente",
+        "frequency": "Frecuencia",
+        "monthly": "Mensual",
+        "yearly": "Anual",
+        "startDate": "Fecha de Inicio",
+        "recurringInfoTitle": "Recurrente:",
+        "recurringInfoText": "{{frequency}} desde el {{date}}"
       },
       "login": {
         "subtitle": "Tu Centro Financiero con IA",

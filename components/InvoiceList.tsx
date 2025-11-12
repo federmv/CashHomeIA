@@ -6,6 +6,7 @@ import { EditIcon } from './icons/EditIcon';
 import InvoiceDetailModal from './InvoiceDetailModal';
 import ManualInvoiceModal from './ManualInvoiceModal';
 import { PlusIcon } from './icons/PlusIcon';
+import { RepeatIcon } from './icons/RepeatIcon';
 
 interface InvoiceListProps {
     invoices: Invoice[];
@@ -140,7 +141,16 @@ const InvoiceList: React.FC<InvoiceListProps> = ({ invoices, deleteInvoice, addI
                                 className="border-b border-brand-primary hover:bg-brand-primary/50 cursor-pointer"
                                 onClick={() => setSelectedInvoice(invoice)}
                             >
-                                <td className="p-3 font-medium text-white">{invoice.provider}</td>
+                                <td className="p-3 font-medium text-white">
+                                    <div className="flex items-center gap-2">
+                                        <span>{invoice.provider}</span>
+                                        {invoice.isRecurring && (
+                                            <div className="text-brand-text-secondary" title={t('invoices.recurringInfo', { frequency: t(`modals.${invoice.recurringFrequency}`) })}>
+                                                <RepeatIcon />
+                                            </div>
+                                        )}
+                                    </div>
+                                </td>
                                 <td className="p-3 text-brand-text-secondary hidden md:table-cell">{invoice.category}</td>
                                 <td className="p-3 text-brand-text-secondary hidden sm:table-cell">{formatDate(invoice.date)}</td>
                                 <td className="p-3 text-white font-semibold text-right">{formatCurrency(invoice.total)}</td>

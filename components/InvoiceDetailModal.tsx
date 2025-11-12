@@ -81,6 +81,17 @@ const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({ invoice, onClos
                         <span className="font-semibold">{t('modals.invoiceDate')}</span>
                         <span className="text-white font-medium">{formatDate(invoice.date)}</span>
                     </div>
+                    {invoice.isRecurring && invoice.recurringStartDate && (
+                        <div className="flex justify-between items-center bg-brand-primary/50 p-2 rounded-md">
+                            <span className="font-semibold">{t('modals.recurringInfoTitle')}</span>
+                            <span className="text-white font-medium text-right">
+                                {t('modals.recurringInfoText', { 
+                                    frequency: t(`modals.${invoice.recurringFrequency}`), 
+                                    date: formatDate(invoice.recurringStartDate) 
+                                })}
+                            </span>
+                        </div>
+                    )}
                 </div>
 
                 <hr className="border-brand-primary my-4" />

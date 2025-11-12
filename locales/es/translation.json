@@ -32,7 +32,8 @@
     "actions": "Acciones",
     "noInvoices": "Aún no hay Facturas",
     "noInvoicesDescription": "Tu lista de facturas está vacía. Empieza subiendo un archivo o añadiendo una entrada manualmente.",
-    "addNewInvoice": "Añadir Nueva Factura"
+    "addNewInvoice": "Añadir Nueva Factura",
+    "recurringInfo": "Recurrente {{frequency}}"
   },
   "income": {
     "title": "Ingresos",
@@ -80,7 +81,14 @@
     "incomeSource": "Fuente de Ingreso",
     "amount": "Monto",
     "descriptionOptional": "Descripción (Opcional)",
-    "saveIncome": "Guardar Ingreso"
+    "saveIncome": "Guardar Ingreso",
+    "setAsRecurring": "Establecer como recurrente",
+    "frequency": "Frecuencia",
+    "monthly": "Mensual",
+    "yearly": "Anual",
+    "startDate": "Fecha de Inicio",
+    "recurringInfoTitle": "Recurrente:",
+    "recurringInfoText": "{{frequency}} desde el {{date}}"
   },
   "login": {
     "subtitle": "Tu Centro Financiero con IA",

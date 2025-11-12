@@ -15,6 +15,9 @@ export interface Invoice {
   fileName: string;
   items: InvoiceItem[];
   category: string;
+  isRecurring?: boolean;
+  recurringFrequency?: 'monthly' | 'yearly';
+  recurringStartDate?: string;
 }
 
 export interface Income {

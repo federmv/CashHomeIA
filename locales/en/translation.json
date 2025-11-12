@@ -32,7 +32,8 @@
     "actions": "Actions",
     "noInvoices": "No Invoices Yet",
     "noInvoicesDescription": "It looks like your invoice list is empty. Get started by uploading a file or adding an entry manually.",
-    "addNewInvoice": "Add New Invoice"
+    "addNewInvoice": "Add New Invoice",
+    "recurringInfo": "Recurs {{frequency}}"
   },
   "income": {
     "title": "Income",
@@ -80,7 +81,14 @@
     "incomeSource": "Income Source",
     "amount": "Amount",
     "descriptionOptional": "Description (Optional)",
-    "saveIncome": "Save Income"
+    "saveIncome": "Save Income",
+    "setAsRecurring": "Set as recurring",
+    "frequency": "Frequency",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "startDate": "Start Date",
+    "recurringInfoTitle": "Recurring:",
+    "recurringInfoText": "{{frequency}} starting {{date}}"
   },
   "login": {
     "subtitle": "Your AI-Powered Financial Hub",

@@ -34,6 +34,10 @@ const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({ isOpen, onClose
     const [tax, setTax] = useState(0);
     const [category, setCategory] = useState(EXPENSE_CATEGORIES[0]);
     const [isSaving, setIsSaving] = useState(false);
+    const [isRecurring, setIsRecurring] = useState(false);
+    const [recurringFrequency, setRecurringFrequency] = useState<'monthly' | 'yearly'>('monthly');
+    const [recurringStartDate, setRecurringStartDate] = useState('');
+
 
     const formatCurrency = useMemo(() => (num: number) => {
         return new Intl.NumberFormat(i18n.language, {
@@ -50,11 +54,15 @@ const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({ isOpen, onClose
     const total = useMemo(() => subtotal + tax, [subtotal, tax]);
 
     const resetForm = () => {
+        const today = new Date().toISOString().split('T')[0];
         setProvider('');
-        setDate(new Date().toISOString().split('T')[0]);
+        setDate(today);
         setItems([{ ...emptyItem }]);
         setTax(0);
         setCategory(EXPENSE_CATEGORIES[0]);
+        setIsRecurring(false);
+        setRecurringFrequency('monthly');
+        setRecurringStartDate(today);
     };
 
     useEffect(() => {
@@ -65,6 +73,9 @@ const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({ isOpen, onClose
                 setItems(invoiceToEdit.items.length > 0 ? invoiceToEdit.items : [{...emptyItem}]);
                 setTax(invoiceToEdit.tax);
                 setCategory(invoiceToEdit.category || EXPENSE_CATEGORIES[0]);
+                setIsRecurring(invoiceToEdit.isRecurring || false);
+                setRecurringFrequency(invoiceToEdit.recurringFrequency || 'monthly');
+                setRecurringStartDate(invoiceToEdit.recurringStartDate || invoiceToEdit.date);
             } else {
                 resetForm();
             }
@@ -117,6 +128,11 @@ const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({ isOpen, onClose
             items: items.map(item => ({...item, total: item.quantity * item.unitPrice})),
             fileName: invoiceToEdit?.fileName || 'Manual Entry',
             category,
+            isRecurring,
+            ...(isRecurring && {
+                recurringFrequency,
+                recurringStartDate,
+            }),
         };
 
         try {
@@ -187,6 +203,41 @@ const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({ isOpen, onClose
                              <select id="category" value={category} onChange={e => setCategory(e.target.value)} className="w-full bg-brand-primary border border-brand-text-secondary/50 rounded-lg px-4 py-2 text-white focus:ring-brand-accent focus:border-brand-accent transition">
                                 {EXPENSE_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                              </select>
+                        </div>
+
+                        <div className="pt-4 border-t border-brand-primary">
+                            <div className="flex items-center justify-between">
+                                <label htmlFor="isRecurring" className="text-sm font-medium text-brand-text-secondary cursor-pointer flex-grow">
+                                    {t('modals.setAsRecurring')}
+                                </label>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsRecurring(!isRecurring)}
+                                    className={`${isRecurring ? 'bg-brand-accent' : 'bg-brand-primary'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-accent focus:ring-offset-2 focus:ring-offset-brand-secondary`}
+                                    role="switch"
+                                    aria-checked={isRecurring}
+                                >
+                                    <span
+                                        aria-hidden="true"
+                                        className={`${isRecurring ? 'translate-x-5' : 'translate-x-0'} pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}
+                                    />
+                                </button>
+                            </div>
+                             {isRecurring && (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 mt-4 border-t border-brand-primary/50 animate-fade-in-down">
+                                    <div>
+                                        <label htmlFor="recurringFrequency" className="block text-sm font-medium text-brand-text-secondary mb-2">{t('modals.frequency')}</label>
+                                        <select id="recurringFrequency" value={recurringFrequency} onChange={e => setRecurringFrequency(e.target.value as 'monthly' | 'yearly')} className="w-full bg-brand-primary border border-brand-text-secondary/50 rounded-lg px-4 py-2 text-white focus:ring-brand-accent focus:border-brand-accent transition">
+                                            <option value="monthly">{t('modals.monthly')}</option>
+                                            <option value="yearly">{t('modals.yearly')}</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label htmlFor="recurringStartDate" className="block text-sm font-medium text-brand-text-secondary mb-2">{t('modals.startDate')}</label>
+                                        <input type="date" id="recurringStartDate" value={recurringStartDate} onChange={e => setRecurringStartDate(e.target.value)} required className="w-full bg-brand-primary border border-brand-text-secondary/50 rounded-lg px-4 py-2 text-white" style={{ colorScheme: 'dark' }} />
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <div>

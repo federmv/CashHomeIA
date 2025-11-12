@@ -39,6 +39,7 @@
             animation: {
               'slide-in-left': 'slide-in-left 0.4s ease-out forwards',
               'slide-in-right': 'slide-in-right 0.4s ease-out forwards',
+              'fade-in-down': 'fade-in-down 0.3s ease-out forwards',
             },
             keyframes: {
               'slide-in-left': {
@@ -48,6 +49,10 @@
               'slide-in-right': {
                 '0%': { transform: 'translateX(30px)', opacity: '0' },
                 '100%': { transform: 'translateX(0)', opacity: '1' },
+              },
+              'fade-in-down': {
+                '0%': { transform: 'translateY(-10px)', opacity: '0' },
+                '100%': { transform: 'translateY(0)', opacity: '1' },
               },
             }
           }
