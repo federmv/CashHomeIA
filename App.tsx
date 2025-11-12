@@ -128,26 +128,31 @@ function App() {
         );
     }, [user, t]);
 
-    // Simplified swipe handlers
+    // Swipe handlers re-architected for robustness
     const handleTouchStart = (e: React.TouchEvent) => {
-        // Reset and record the starting point of the touch
         touchStartPoint.current = { x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY };
         touchEndPoint.current = { x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY };
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
-        // Continuously update the end point as the finger moves
+        // Update the end point continuously
         touchEndPoint.current = { x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY };
-    };
-
-    const handleTouchEnd = () => {
-        // All logic is now handled at the end of the gesture, preventing interference with scrolling.
+        
         const distanceX = touchStartPoint.current.x - touchEndPoint.current.x;
         const distanceY = touchStartPoint.current.y - touchEndPoint.current.y;
 
-        // A valid swipe is:
-        // 1. Longer than the minimum swipe distance.
-        // 2. Primarily horizontal (more horizontal movement than vertical).
+        // If the swipe is primarily horizontal, prevent the browser's default vertical scroll.
+        // This is the key to resolving the conflict between swiping and scrolling.
+        if (Math.abs(distanceX) > Math.abs(distanceY)) {
+            e.preventDefault();
+        }
+    };
+
+    const handleTouchEnd = () => {
+        const distanceX = touchStartPoint.current.x - touchEndPoint.current.x;
+        const distanceY = touchStartPoint.current.y - touchEndPoint.current.y;
+
+        // A valid swipe is longer than the minimum distance and primarily horizontal.
         if (Math.abs(distanceX) > minSwipeDistance && Math.abs(distanceX) > Math.abs(distanceY)) {
             const currentIndex = viewOrder.indexOf(currentView);
             
@@ -161,7 +166,6 @@ function App() {
                 setAnimationClass('animate-slide-in-left');
             }
         }
-        // No state to reset here, it's handled on the next touchStart.
     };
 
     useEffect(() => {
@@ -201,8 +205,8 @@ function App() {
                 setCurrentView={handleHeaderNavigation}
             />
             <main
-                // The `touch-pan-y` class tells the browser to prioritize vertical scrolling.
-                className={`p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto touch-pan-y ${animationClass}`}
+                // Gesture is now fully controlled by JS, so touch-pan-y is removed.
+                className={`p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto ${animationClass}`}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
