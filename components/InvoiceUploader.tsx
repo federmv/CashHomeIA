@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { analyzeInvoice } from '../services/geminiService';
@@ -6,13 +7,11 @@ import { Invoice } from '../types';
 import { UploadIcon } from './icons/UploadIcon';
 import { SpinnerIcon } from './icons/SpinnerIcon';
 import { toast } from 'react-hot-toast';
+import { useData } from '../contexts/DataContext';
 
-interface InvoiceUploaderProps {
-    onInvoiceUploaded: (invoice: Omit<Invoice, 'id'>) => Promise<void>;
-}
-
-const InvoiceUploader: React.FC<InvoiceUploaderProps> = ({ onInvoiceUploaded }) => {
+const InvoiceUploader: React.FC = () => {
     const { t, i18n } = useTranslation();
+    const { addInvoice } = useData();
     const [isDragging, setIsDragging] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [fileName, setFileName] = useState<string | null>(null);
@@ -27,7 +26,7 @@ const InvoiceUploader: React.FC<InvoiceUploaderProps> = ({ onInvoiceUploaded }) 
             const mimeType = getMimeType(file.name);
             const parsedData = await analyzeInvoice({ mimeType, data: base64Data }, t, i18n.language);
 
-            await onInvoiceUploaded({
+            await addInvoice({
                 ...parsedData,
                 fileName: file.name,
             });
@@ -40,7 +39,7 @@ const InvoiceUploader: React.FC<InvoiceUploaderProps> = ({ onInvoiceUploaded }) 
             setIsLoading(false);
             setFileName(null);
         }
-    }, [onInvoiceUploaded, t, i18n.language]);
+    }, [addInvoice, t, i18n.language]);
 
     const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();

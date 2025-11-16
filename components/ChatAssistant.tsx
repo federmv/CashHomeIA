@@ -1,20 +1,18 @@
 
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getChatResponse } from '../services/geminiService';
-import { ChatMessage, Invoice, Income } from '../types';
+import { ChatMessage } from '../types';
 import { ChatIcon } from './icons/ChatIcon';
 import { CloseIcon } from './icons/CloseIcon';
 import { SendIcon } from './icons/SendIcon';
 import { SpinnerIcon } from './icons/SpinnerIcon';
+import { useData } from '../contexts/DataContext';
 
-interface ChatAssistantProps {
-    invoices: Invoice[];
-    income: Income[];
-}
-
-const ChatAssistant: React.FC<ChatAssistantProps> = ({ invoices, income }) => {
+const ChatAssistant: React.FC = () => {
     const { t, i18n } = useTranslation();
+    const { invoices, income } = useData();
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [userInput, setUserInput] = useState('');

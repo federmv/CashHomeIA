@@ -1,13 +1,8 @@
-import React, { useMemo, useState, useEffect } from 'react';
+
+import React, { useMemo, useState } from 'react';
 import { AreaChart, Area, Bar, BarChart, CartesianGrid, Cell, Legend, Pie as RechartsPie, PieChart, ResponsiveContainer, Sector, Tooltip, XAxis, YAxis } from 'recharts';
 import { useTranslation } from 'react-i18next';
-import { Invoice, Income } from '../types';
-
-
-interface DashboardProps {
-    invoices: Invoice[];
-    income: Income[];
-}
+import { useData } from '../contexts/DataContext';
 
 const COLORS = ['#3E7BFA', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#3B82F6', '#EC4899', '#6366F1'];
 
@@ -15,8 +10,9 @@ const COLORS = ['#3E7BFA', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#3B82F6'
 // This is a workaround to bypass an incorrect TypeScript error.
 const Pie = RechartsPie as any;
 
-const Dashboard: React.FC<DashboardProps> = ({ invoices, income }) => {
+const Dashboard: React.FC = () => {
     const { t, i18n } = useTranslation();
+    const { invoices, income } = useData();
     const [activeIndex, setActiveIndex] = useState(0);
 
     const formatCurrency = useMemo(() => (value: number) => {

@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Income } from '../types';
@@ -6,16 +7,11 @@ import { PlusIcon } from './icons/PlusIcon';
 import { EditIcon } from './icons/EditIcon';
 import ManualIncomeModal from './ManualIncomeModal';
 import ConfirmationModal from './ConfirmationModal';
+import { useData } from '../contexts/DataContext';
 
-interface IncomeListProps {
-    income: Income[];
-    deleteIncome: (id: string) => Promise<void>;
-    addIncome: (income: Omit<Income, 'id'>) => Promise<void>;
-    updateIncome: (id: string, income: Omit<Income, 'id'>) => Promise<void>;
-}
-
-const IncomeList: React.FC<IncomeListProps> = ({ income, deleteIncome, addIncome, updateIncome }) => {
+const IncomeList: React.FC = () => {
     const { t, i18n } = useTranslation();
+    const { income, deleteIncome, addIncome, updateIncome } = useData();
     const [searchTerm, setSearchTerm] = useState('');
     const [dateFilter, setDateFilter] = useState('all');
     const [isModalOpen, setIsModalOpen] = useState(false);

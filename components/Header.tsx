@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { User } from 'firebase/auth';
 import { useTranslation } from 'react-i18next';
@@ -8,15 +9,16 @@ import { IncomeIcon } from './icons/IncomeIcon';
 import LanguageSwitcher from './LanguageSwitcher';
 import { signOut, getAuth } from 'firebase/auth';
 import { LogoutIcon } from './icons/LogoutIcon';
+import { useAuth } from '../contexts/AuthContext';
 
 interface HeaderProps {
-    user: User;
     currentView: View;
     setCurrentView: (view: View) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ user, currentView, setCurrentView }) => {
+const Header: React.FC<HeaderProps> = ({ currentView, setCurrentView }) => {
     const { t } = useTranslation();
+    const { user } = useAuth();
 
     const NavButton = ({ view, icon, text }: { view: View, icon: React.ReactElement, text: string }) => (
         <button
@@ -35,6 +37,8 @@ const Header: React.FC<HeaderProps> = ({ user, currentView, setCurrentView }) =>
         const auth = getAuth();
         signOut(auth);
     };
+
+    if (!user) return null;
 
     return (
         <header className="bg-brand-secondary/50 backdrop-blur-sm sticky top-0 z-50">

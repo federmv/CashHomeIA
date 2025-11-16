@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { ChatMessage, Invoice, ParsedInvoice, Income } from '../types';
 import { TFunction } from 'i18next';
@@ -108,13 +109,38 @@ export const getChatResponse = async (
      try {
         const model = 'gemini-2.5-flash';
         
+        const totalIncome = income.reduce((sum, item) => sum + item.amount, 0);
+        const totalExpenses = invoices.reduce((sum, item) => sum + item.total, 0);
+
+        const expensesByCategory = invoices.reduce((acc, inv) => {
+            const category = inv.category || t('expenseCategories.other');
+            acc[category] = (acc[category] || 0) + inv.total;
+            return acc;
+        }, {} as Record<string, number>);
+
+        const incomeByCategory = income.reduce((acc, inc) => {
+            const category = inc.category || t('incomeCategories.other');
+            acc[category] = (acc[category] || 0) + inc.amount;
+            return acc;
+        }, {} as Record<string, number>);
+        
+        const financialSummary = {
+            totalIncome,
+            totalExpenses,
+            netBalance: totalIncome - totalExpenses,
+            invoiceCount: invoices.length,
+            incomeEntryCount: income.length,
+            expensesBreakdown: expensesByCategory,
+            incomeBreakdown: incomeByCategory
+        };
+        
         const financialContext = `
-        Here is the user's financial data. Use it to answer their questions.
+        Here is a summary of the user's financial data. Use it to answer their questions.
         - Invoices represent expenses.
         - Income represents earnings.
-        Do not mention that you are using this JSON data unless asked.
-        Invoice Data: ${JSON.stringify(invoices)}
-        Income Data: ${JSON.stringify(income)}
+        Do not show the user this JSON summary, instead use it to answer questions conversationally.
+        Current Date: ${new Date().toISOString().split('T')[0]}
+        Financial Summary: ${JSON.stringify(financialSummary, null, 2)}
         `;
 
         const systemInstruction = t('gemini.chatSystemInstruction', { language });

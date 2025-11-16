@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Invoice } from '../types';
@@ -8,16 +9,11 @@ import ManualInvoiceModal from './ManualInvoiceModal';
 import { PlusIcon } from './icons/PlusIcon';
 import { RepeatIcon } from './icons/RepeatIcon';
 import ConfirmationModal from './ConfirmationModal';
+import { useData } from '../contexts/DataContext';
 
-interface InvoiceListProps {
-    invoices: Invoice[];
-    deleteInvoice: (id: string) => Promise<void>;
-    addInvoice: (invoice: Omit<Invoice, 'id'>) => Promise<void>;
-    updateInvoice: (id: string, invoice: Omit<Invoice, 'id'>) => Promise<void>;
-}
-
-const InvoiceList: React.FC<InvoiceListProps> = ({ invoices, deleteInvoice, addInvoice, updateInvoice }) => {
+const InvoiceList: React.FC = () => {
     const { t, i18n } = useTranslation();
+    const { invoices, deleteInvoice, addInvoice, updateInvoice } = useData();
     const [searchTerm, setSearchTerm] = useState('');
     const [dateFilter, setDateFilter] = useState('all');
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);

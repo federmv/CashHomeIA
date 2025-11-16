@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './i18n';
 import FullScreenLoader from './components/FullScreenLoader';
+import { AuthProvider } from './contexts/AuthContext';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -14,7 +15,9 @@ const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
     <Suspense fallback={<FullScreenLoader />}>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </Suspense>
   </React.StrictMode>
 );
