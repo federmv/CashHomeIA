@@ -97,7 +97,14 @@ const resources = {
         "yearly": "Yearly",
         "startDate": "Start Date",
         "recurringInfoTitle": "Recurring:",
-        "recurringInfoText": "{{frequency}} starting {{date}}"
+        "recurringInfoText": "{{frequency}} starting {{date}}",
+        "confirmation": {
+          "deleteTitle": "Confirm Deletion",
+          "deleteInvoiceMessage": "Are you sure you want to delete this invoice? This action cannot be undone.",
+          "deleteIncomeMessage": "Are you sure you want to delete this income entry? This action cannot be undone.",
+          "cancel": "Cancel",
+          "confirm": "Confirm"
+        }
       },
       "login": {
         "subtitle": "Your AI-Powered Financial Hub",
@@ -163,9 +170,8 @@ const resources = {
         "other": "Other"
       },
       "gemini": {
-        "analyzeInvoicePrompt": "Analyze this invoice in {{language}} and extract the provider name, invoice date, subtotal (amount before tax), tax amount, and total amount. Also extract all line items, including a description, quantity, unit price, and line total for each item. Finally, suggest a category for this expense from the following list: [{{categories}}]. The date should be in YYYY-MM-DD format.",
-        "chatSystemInstruction": "You are CashHome's expert AI accountant. You are friendly, insightful, and help users understand their financial data (invoices and income). Your response must be in {{language}}. Analyze the provided JSON data to answer questions accurately. Provide concise and clear answers. If a question cannot be answered from the data, say so politely. You can answer questions about expenses, income, and net balance/profit.",
-        "invoiceAnalysisError": "Failed to analyze the invoice. The AI model could not process the file."
+        "chatSystemInstruction": "You are an expert AI accountant. You are friendly, insightful, and help users understand their financial data (invoices and income). Your response must be in {{language}}. Analyze the provided JSON data to answer questions accurately. Provide concise and clear answers. If a question cannot be answered from the data, say so politely. You can answer questions about expenses, income, and net balance/profit.",
+        "invoiceAnalysisError": "The AI failed to analyze the invoice. Please ensure the document is clear and try again."
       }
     }
   },
@@ -260,7 +266,14 @@ const resources = {
         "yearly": "Anual",
         "startDate": "Fecha de Inicio",
         "recurringInfoTitle": "Recurrente:",
-        "recurringInfoText": "{{frequency}} desde el {{date}}"
+        "recurringInfoText": "{{frequency}} desde el {{date}}",
+        "confirmation": {
+          "deleteTitle": "Confirmar Eliminación",
+          "deleteInvoiceMessage": "¿Estás seguro de que quieres eliminar esta factura? Esta acción no se puede deshacer.",
+          "deleteIncomeMessage": "¿Estás seguro de que quieres eliminar esta entrada de ingreso? Esta acción no se puede deshacer.",
+          "cancel": "Cancelar",
+          "confirm": "Confirmar"
+        }
       },
       "login": {
         "subtitle": "Tu Centro Financiero con IA",
@@ -326,9 +339,8 @@ const resources = {
         "other": "Otro"
       },
       "gemini": {
-        "analyzeInvoicePrompt": "Analiza esta factura en {{language}} y extrae el nombre del proveedor, la fecha de la factura, el subtotal (monto antes de impuestos), el monto del impuesto y el monto total. Extrae también todos los artículos, incluyendo descripción, cantidad, precio unitario y total de línea para cada uno. Finalmente, sugiere una categoría para este gasto de la siguiente lista: [{{categories}}]. La fecha debe estar en formato AAAA-MM-DD.",
-        "chatSystemInstruction": "Eres el experto contable de IA de CashHome. Eres amigable, perspicaz y ayudas a los usuarios a entender sus datos financieros (facturas e ingresos). Tu respuesta debe ser en {{language}}. Analiza los datos JSON proporcionados para responder preguntas con precisión. Ofrece respuestas concisas y claras. Si una pregunta no puede responderse con los datos, dilo amablemente. Puedes responder preguntas sobre gastos, ingresos y balance neto/ganancias.",
-        "invoiceAnalysisError": "Fallo al analizar la factura. El modelo de IA no pudo procesar el archivo."
+        "chatSystemInstruction": "Eres un experto contable de IA. Eres amigable, perspicaz y ayudas a los usuarios a entender sus datos financieros (facturas e ingresos). Tu respuesta debe ser en {{language}}. Analiza los datos JSON proporcionados para responder preguntas con precisión. Ofrece respuestas concisas y claras. Si una pregunta no puede responderse con los datos, dilo amablemente. Puedes responder preguntas sobre gastos, ingresos y balance neto/ganancias.",
+        "invoiceAnalysisError": "La IA no pudo analizar la factura. Por favor, asegúrate de que el documento sea claro e inténtalo de nuevo."
       }
     }
   }

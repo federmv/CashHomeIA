@@ -5,6 +5,7 @@ import { TrashIcon } from './icons/TrashIcon';
 import { PlusIcon } from './icons/PlusIcon';
 import { EditIcon } from './icons/EditIcon';
 import ManualIncomeModal from './ManualIncomeModal';
+import ConfirmationModal from './ConfirmationModal';
 
 interface IncomeListProps {
     income: Income[];
@@ -19,6 +20,9 @@ const IncomeList: React.FC<IncomeListProps> = ({ income, deleteIncome, addIncome
     const [dateFilter, setDateFilter] = useState('all');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [incomeToEdit, setIncomeToEdit] = useState<Income | null>(null);
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+    const [incomeToDelete, setIncomeToDelete] = useState<Income | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const formatCurrency = useMemo(() => (num: number) => {
         return new Intl.NumberFormat(i18n.language, {
@@ -74,6 +78,23 @@ const IncomeList: React.FC<IncomeListProps> = ({ income, deleteIncome, addIncome
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setIncomeToEdit(null);
+    };
+    
+    const handleOpenDeleteConfirm = (incomeEntry: Income) => {
+        setIncomeToDelete(incomeEntry);
+        setIsConfirmModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!incomeToDelete) return;
+        setIsDeleting(true);
+        try {
+            await deleteIncome(incomeToDelete.id);
+        } finally {
+            setIsDeleting(false);
+            setIsConfirmModalOpen(false);
+            setIncomeToDelete(null);
+        }
     };
 
     return (
@@ -138,7 +159,7 @@ const IncomeList: React.FC<IncomeListProps> = ({ income, deleteIncome, addIncome
                                             <EditIcon />
                                         </button>
                                         <button 
-                                            onClick={() => deleteIncome(inc.id)} 
+                                            onClick={() => handleOpenDeleteConfirm(inc)} 
                                             className="text-red-400 hover:text-red-300 p-1 rounded-full hover:bg-red-500/10"
                                             aria-label={`Delete income from ${inc.source}`}
                                         >
@@ -170,6 +191,14 @@ const IncomeList: React.FC<IncomeListProps> = ({ income, deleteIncome, addIncome
                 onAddIncome={addIncome}
                 onUpdateIncome={updateIncome}
                 incomeToEdit={incomeToEdit}
+            />
+             <ConfirmationModal
+                isOpen={isConfirmModalOpen}
+                onClose={() => setIsConfirmModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title={t('modals.confirmation.deleteTitle')}
+                message={t('modals.confirmation.deleteIncomeMessage')}
+                isDeleting={isDeleting}
             />
         </div>
     );

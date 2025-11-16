@@ -2,7 +2,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { ChatMessage, Invoice, ParsedInvoice, Income } from '../types';
 import { TFunction } from 'i18next';
 
-const getAiClient = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
 
 const getExpenseCategories = (t: TFunction) => [
     t('expenseCategories.software'),
@@ -24,65 +24,72 @@ export const analyzeInvoice = async (
     language: string
 ): Promise<ParsedInvoice> => {
     try {
-        const ai = getAiClient();
-        const categories = getExpenseCategories(t);
-        const promptText = t('gemini.analyzeInvoicePrompt', {
-            language,
-            categories: categories.join(", "),
-        });
-        
-        const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: {
-                parts: [
-                    {
-                        inlineData: {
-                            mimeType: fileData.mimeType,
-                            data: fileData.data,
+        const model = 'gemini-2.5-flash';
+        const categories = getExpenseCategories(t).join(', ');
+
+        const schema = {
+            type: Type.OBJECT,
+            properties: {
+                provider: { type: Type.STRING, description: "The name of the company or vendor issuing the invoice." },
+                date: { type: Type.STRING, description: "The issue date of the invoice in YYYY-MM-DD format." },
+                amount: { type: Type.NUMBER, description: "The subtotal amount before tax." },
+                tax: { type: Type.NUMBER, description: "The total tax amount." },
+                total: { type: Type.NUMBER, description: "The final total amount due." },
+                items: {
+                    type: Type.ARRAY,
+                    description: "A list of all line items from the invoice.",
+                    items: {
+                        type: Type.OBJECT,
+                        properties: {
+                            description: { type: Type.STRING },
+                            quantity: { type: Type.NUMBER },
+                            unitPrice: { type: Type.NUMBER, description: "Price per single unit." },
+                            total: { type: Type.NUMBER, description: "Total price for the line item (quantity * unitPrice)." },
                         },
+                        required: ["description", "quantity", "unitPrice", "total"],
                     },
-                    { text: promptText },
-                ],
-            },
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: {
-                    type: Type.OBJECT,
-                    properties: {
-                        provider: { type: Type.STRING, description: "The name of the company that issued the invoice." },
-                        date: { type: Type.STRING, description: "The date of the invoice in YYYY-MM-DD format." },
-                        amount: { type: Type.NUMBER, description: "The subtotal or amount before taxes." },
-                        tax: { type: Type.NUMBER, description: "The total tax amount." },
-                        total: { type: Type.NUMBER, description: "The final total amount including tax." },
-                        category: { type: Type.STRING, description: `The most appropriate expense category. Must be one of: ${categories.join(", ")}` },
-                        items: {
-                            type: Type.ARRAY,
-                            description: "A list of all line items from the invoice.",
-                            items: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    description: { type: Type.STRING, description: "The description of the line item." },
-                                    quantity: { type: Type.NUMBER, description: "The quantity of the item." },
-                                    unitPrice: { type: Type.NUMBER, description: "The price per unit of the item." },
-                                    total: { type: Type.NUMBER, description: "The total price for the line item (quantity * unitPrice)." },
-                                },
-                                required: ["description", "quantity", "unitPrice", "total"]
-                            }
-                        }
-                    },
-                    required: ["provider", "date", "amount", "tax", "total", "category", "items"],
+                },
+                category: { 
+                    type: Type.STRING, 
+                    description: `Classify the invoice into one of the following categories: ${categories}. If unsure, use '${t('expenseCategories.other')}'.`
                 },
             },
-        });
+            required: ["provider", "date", "total", "category", "items"],
+        };
         
-        const jsonString = response.text.trim();
-        const parsedData: ParsedInvoice = JSON.parse(jsonString);
-        
-        if (typeof parsedData.provider !== 'string' || typeof parsedData.date !== 'string' || typeof parsedData.total !== 'number' || !Array.isArray(parsedData.items)) {
-            throw new Error('Parsed data is missing required fields.');
-        }
+        const prompt = `Analyze the following invoice image. Extract all relevant information and format it as a JSON object according to the provided schema. The language of the invoice can be anything, but your response must adhere to the schema.
+        - Date should be standardized to YYYY-MM-DD format.
+        - If 'amount' (subtotal) or 'tax' are not explicitly available, calculate them from the total and line items if possible. If not, set them to 0.
+        - The 'category' must be one of the provided options.
+        - If no line items are discernible, return an empty array for 'items'.
+        `;
 
-        return parsedData;
+        const response = await ai.models.generateContent({
+            model: model,
+            contents: {
+                parts: [
+                    { text: prompt },
+                    { inlineData: { mimeType: fileData.mimeType, data: fileData.data } }
+                ]
+            },
+            config: {
+                responseMimeType: 'application/json',
+                responseSchema: schema,
+            }
+        });
+
+        const parsedJson = JSON.parse(response.text);
+
+        // Basic validation and default values
+        return {
+            provider: parsedJson.provider || 'Unknown Provider',
+            date: parsedJson.date || new Date().toISOString().split('T')[0],
+            amount: parsedJson.amount || 0,
+            tax: parsedJson.tax || 0,
+            total: parsedJson.total || 0,
+            items: parsedJson.items || [],
+            category: parsedJson.category || t('expenseCategories.other'),
+        };
 
     } catch (error) {
         console.error("Error analyzing invoice with Gemini:", error);
@@ -90,16 +97,19 @@ export const analyzeInvoice = async (
     }
 };
 
+
 export const getChatResponse = async (
-    history: ChatMessage[], 
-    invoices: Invoice[], 
+    history: ChatMessage[],
+    invoices: Invoice[],
     income: Income[],
     t: TFunction,
     language: string
 ): Promise<string> => {
-    try {
-        const ai = getAiClient();
-        const context = `
+     try {
+        const model = 'gemini-2.5-flash';
+        
+        const financialContext = `
+        Here is the user's financial data. Use it to answer their questions.
         - Invoices represent expenses.
         - Income represents earnings.
         Do not mention that you are using this JSON data unless asked.
@@ -108,28 +118,22 @@ export const getChatResponse = async (
         `;
 
         const systemInstruction = t('gemini.chatSystemInstruction', { language });
-        
-        const contents = history.map((msg, i) => {
-            let content = msg.content;
-            if (i === 0) {
-                // Prepend context to the very first message of the conversation.
-                content = `${context}\n\n${content}`;
-            }
-            return {
-                role: msg.role,
-                parts: [{ text: content }],
-            };
-        });
+
+        const contents = history.map(msg => ({
+            role: msg.role,
+            parts: [{ text: msg.content }]
+        }));
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: model,
             contents: contents,
             config: {
-                systemInstruction: systemInstruction,
-            },
+                systemInstruction: `${systemInstruction}\n${financialContext}`
+            }
         });
 
         return response.text;
+
     } catch (error) {
         console.error("Error getting chat response from Gemini:", error);
         return t('chat.error');

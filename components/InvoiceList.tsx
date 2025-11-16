@@ -7,6 +7,7 @@ import InvoiceDetailModal from './InvoiceDetailModal';
 import ManualInvoiceModal from './ManualInvoiceModal';
 import { PlusIcon } from './icons/PlusIcon';
 import { RepeatIcon } from './icons/RepeatIcon';
+import ConfirmationModal from './ConfirmationModal';
 
 interface InvoiceListProps {
     invoices: Invoice[];
@@ -22,6 +23,9 @@ const InvoiceList: React.FC<InvoiceListProps> = ({ invoices, deleteInvoice, addI
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
     const [isManualModalOpen, setIsManualModalOpen] = useState(false);
     const [invoiceToEdit, setInvoiceToEdit] = useState<Invoice | null>(null);
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+    const [invoiceToDelete, setInvoiceToDelete] = useState<Invoice | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const formatCurrency = useMemo(() => (num: number) => {
         return new Intl.NumberFormat(i18n.language, {
@@ -89,6 +93,23 @@ const InvoiceList: React.FC<InvoiceListProps> = ({ invoices, deleteInvoice, addI
     const handleCloseManualModal = () => {
         setIsManualModalOpen(false);
         setInvoiceToEdit(null);
+    };
+
+    const handleOpenDeleteConfirm = (invoice: Invoice) => {
+        setInvoiceToDelete(invoice);
+        setIsConfirmModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!invoiceToDelete) return;
+        setIsDeleting(true);
+        try {
+            await deleteInvoice(invoiceToDelete.id);
+        } finally {
+            setIsDeleting(false);
+            setIsConfirmModalOpen(false);
+            setInvoiceToDelete(null);
+        }
     };
 
     return (
@@ -169,7 +190,7 @@ const InvoiceList: React.FC<InvoiceListProps> = ({ invoices, deleteInvoice, addI
                                         <button 
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                deleteInvoice(invoice.id);
+                                                handleOpenDeleteConfirm(invoice);
                                             }} 
                                             className="text-red-400 hover:text-red-300 p-1 rounded-full hover:bg-red-500/10"
                                             aria-label={`Delete invoice from ${invoice.provider}`}
@@ -203,6 +224,14 @@ const InvoiceList: React.FC<InvoiceListProps> = ({ invoices, deleteInvoice, addI
                 onAddInvoice={addInvoice}
                 onUpdateInvoice={updateInvoice}
                 invoiceToEdit={invoiceToEdit}
+            />
+            <ConfirmationModal
+                isOpen={isConfirmModalOpen}
+                onClose={() => setIsConfirmModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title={t('modals.confirmation.deleteTitle')}
+                message={t('modals.confirmation.deleteInvoiceMessage')}
+                isDeleting={isDeleting}
             />
         </div>
     );

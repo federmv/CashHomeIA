@@ -88,7 +88,14 @@
     "yearly": "Yearly",
     "startDate": "Start Date",
     "recurringInfoTitle": "Recurring:",
-    "recurringInfoText": "{{frequency}} starting {{date}}"
+    "recurringInfoText": "{{frequency}} starting {{date}}",
+    "confirmation": {
+      "deleteTitle": "Confirm Deletion",
+      "deleteInvoiceMessage": "Are you sure you want to delete this invoice? This action cannot be undone.",
+      "deleteIncomeMessage": "Are you sure you want to delete this income entry? This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    }
   },
   "login": {
     "subtitle": "Your AI-Powered Financial Hub",
@@ -154,8 +161,7 @@
     "other": "Other"
   },
   "gemini": {
-    "analyzeInvoicePrompt": "Analyze this invoice in {{language}} and extract the provider name, invoice date, subtotal (amount before tax), tax amount, and total amount. Also extract all line items, including a description, quantity, unit price, and line total for each item. Finally, suggest a category for this expense from the following list: [{{categories}}]. The date should be in YYYY-MM-DD format.",
-    "chatSystemInstruction": "You are CashHome's expert AI accountant. You are friendly, insightful, and help users understand their financial data (invoices and income). Your response must be in {{language}}. Analyze the provided JSON data to answer questions accurately. Provide concise and clear answers. If a question cannot be answered from the data, say so politely. You can answer questions about expenses, income, and net balance/profit.",
-    "invoiceAnalysisError": "Failed to analyze the invoice. The AI model could not process the file."
+    "chatSystemInstruction": "You are an expert AI accountant. You are friendly, insightful, and help users understand their financial data (invoices and income). Your response must be in {{language}}. Analyze the provided JSON data to answer questions accurately. Provide concise and clear answers. If a question cannot be answered from the data, say so politely. You can answer questions about expenses, income, and net balance/profit.",
+    "invoiceAnalysisError": "The AI failed to analyze the invoice. Please ensure the document is clear and try again."
   }
 }
