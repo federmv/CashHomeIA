@@ -1,11 +1,12 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { User } from 'firebase/auth';
 import { useTranslation } from 'react-i18next';
 import { View } from '../types';
 import { ChartIcon } from './icons/ChartIcon';
 import { InvoicesIcon } from './icons/InvoicesIcon';
 import { IncomeIcon } from './icons/IncomeIcon';
+import { InstallIcon } from './icons/InstallIcon';
 import LanguageSwitcher from './LanguageSwitcher';
 import { signOut, getAuth } from 'firebase/auth';
 import { LogoutIcon } from './icons/LogoutIcon';
@@ -19,6 +20,42 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ currentView, setCurrentView }) => {
     const { t } = useTranslation();
     const { user } = useAuth();
+    const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+    useEffect(() => {
+        // Check if event was captured before component mounted
+        if ((window as any).deferredPrompt) {
+            setDeferredPrompt((window as any).deferredPrompt);
+        }
+
+        const handleBeforeInstallPrompt = (e: any) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later.
+            setDeferredPrompt(e);
+        };
+
+        window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+        return () => {
+            window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        };
+    }, []);
+
+    const handleInstallClick = async () => {
+        if (!deferredPrompt) return;
+
+        // Show the install prompt
+        deferredPrompt.prompt();
+
+        // Wait for the user to respond to the prompt
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+
+        // We've used the prompt, and can't use it again, throw it away
+        setDeferredPrompt(null);
+        (window as any).deferredPrompt = null;
+    };
 
     const NavButton = ({ view, icon, text }: { view: View, icon: React.ReactElement, text: string }) => (
         <button
@@ -61,6 +98,19 @@ const Header: React.FC<HeaderProps> = ({ currentView, setCurrentView }) => {
 
                     {/* RIGHT GROUP: Contains language switcher and user actions. Won't shrink. */}
                     <div className="flex items-center flex-shrink-0 gap-2 sm:gap-3">
+                        {deferredPrompt && (
+                             <button
+                                onClick={handleInstallClick}
+                                className="bg-brand-accent text-white rounded-lg transition hover:bg-opacity-80 flex items-center justify-center h-10 w-10 sm:w-auto sm:px-4 flex-shrink-0 shadow-glow"
+                                title={t('header.installApp')}
+                            >
+                                <div className="sm:hidden"><InstallIcon /></div>
+                                <span className="hidden sm:flex items-center gap-2">
+                                    <InstallIcon />
+                                    <span>{t('header.installApp')}</span>
+                                </span>
+                            </button>
+                        )}
                         <LanguageSwitcher />
                         <div className="text-right hidden sm:block max-w-[100px] md:max-w-40">
                            <p className="text-sm text-white font-semibold truncate" title={user.displayName || user.email || ''}>{user.displayName || user.email}</p>

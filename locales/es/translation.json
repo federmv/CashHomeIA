@@ -3,7 +3,8 @@
     "dashboard": "Panel",
     "invoices": "Facturas",
     "income": "Ingresos",
-    "logout": "Cerrar Sesión"
+    "logout": "Cerrar Sesión",
+    "installApp": "Instalar App"
   },
   "dashboard": {
     "title": "Panel de Control",

@@ -3,7 +3,8 @@
     "dashboard": "Dashboard",
     "invoices": "Invoices",
     "income": "Income",
-    "logout": "Logout"
+    "logout": "Logout",
+    "installApp": "Install App"
   },
   "dashboard": {
     "title": "Dashboard",

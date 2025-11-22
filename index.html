@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -78,6 +79,14 @@
     "firebase/": "https://aistudiocdn.com/firebase@^12.5.0/"
   }
 }
+</script>
+<script>
+  // Capture the install prompt event early
+  window.deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    window.deferredPrompt = e;
+  });
 </script>
 </head>
   <body class="bg-brand-primary text-brand-text">
