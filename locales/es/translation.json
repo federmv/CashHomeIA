@@ -1,3 +1,4 @@
+
 {
   "header": {
     "dashboard": "Panel",
@@ -23,6 +24,9 @@
     "uploadOr": "o arrastra y suelta",
     "uploadHint": "PDF, DOC, XLS, PNG, JPG",
     "analyzingFile": "Analizando {{fileName}}...",
+    "analyzingStep1": "Leyendo archivo...",
+    "analyzingStep2": "Consultando IA...",
+    "analyzingStep3": "Preparando revisión...",
     "thisMayTakeAMoment": "Esto puede tardar un momento.",
     "searchPlaceholder": "Buscar proveedor, artículo...",
     "newInvoice": "Nueva Factura",
@@ -98,6 +102,18 @@
       "confirm": "Confirmar"
     }
   },
+  "settings": {
+    "title": "Configuración de Categorías",
+    "expenseCategories": "Gastos",
+    "incomeCategories": "Ingresos",
+    "addPlaceholder": "Añadir nueva categoría...",
+    "custom": "Categorías Personalizadas",
+    "defaults": "Categorías Predeterminadas",
+    "noCustomCategories": "No hay categorías personalizadas.",
+    "categoryAdded": "Categoría añadida con éxito.",
+    "categoryRemoved": "Categoría eliminada.",
+    "categoryExists": "Esta categoría ya existe."
+  },
   "login": {
     "subtitle": "Tu Centro Financiero con IA",
     "welcome": "Bienvenido de Nuevo",
@@ -132,7 +148,8 @@
     "incomeDeleteError": "No se pudo eliminar el ingreso.",
     "fillProviderAndItems": "Por favor, rellena el proveedor y asegúrate de que todos los artículos estén completos.",
     "fillSourceAndAmount": "Por favor, rellena la fuente e introduce un monto positivo.",
-    "fillDisplayName": "Por favor, introduce un nombre de usuario."
+    "fillDisplayName": "Por favor, introduce un nombre de usuario.",
+    "recurringProcessed": "Se procesaron {{count}} facturas recurrentes."
   },
   "dateFilters": {
     "all": "Siempre",

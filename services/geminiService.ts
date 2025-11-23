@@ -5,29 +5,18 @@ import { TFunction } from 'i18next';
 
 const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
 
-const getExpenseCategories = (t: TFunction) => [
-    t('expenseCategories.software'),
-    t('expenseCategories.utilities'),
-    t('expenseCategories.office'),
-    t('expenseCategories.marketing'),
-    t('expenseCategories.travel'),
-    t('expenseCategories.meals'),
-    t('expenseCategories.services'),
-    t('expenseCategories.rent'),
-    t('expenseCategories.payroll'),
-    t('expenseCategories.inventory'),
-    t('expenseCategories.other'),
-];
-
 export const analyzeInvoice = async (
     fileData: { mimeType: string; data: string },
     t: TFunction,
-    language: string
+    language: string,
+    categories: string[] // Now receiving the full list (defaults + custom)
 ): Promise<ParsedInvoice> => {
     try {
         const model = 'gemini-2.5-flash';
-        const categories = getExpenseCategories(t).join(', ');
-
+        
+        // We use the passed categories directly
+        const categoryListString = categories.join(', ');
+        
         const schema = {
             type: Type.OBJECT,
             properties: {
@@ -52,7 +41,7 @@ export const analyzeInvoice = async (
                 },
                 category: { 
                     type: Type.STRING, 
-                    description: `Classify the invoice into one of the following categories: ${categories}. If unsure, use '${t('expenseCategories.other')}'.`
+                    description: `Classify the invoice into one of these exact categories: ${categoryListString}. If unsure, use '${t('expenseCategories.other')}'.`
                 },
             },
             required: ["provider", "date", "total", "category", "items"],
@@ -61,7 +50,7 @@ export const analyzeInvoice = async (
         const prompt = `Analyze the following invoice image. Extract all relevant information and format it as a JSON object according to the provided schema. The language of the invoice can be anything, but your response must adhere to the schema.
         - Date should be standardized to YYYY-MM-DD format.
         - If 'amount' (subtotal) or 'tax' are not explicitly available, calculate them from the total and line items if possible. If not, set them to 0.
-        - The 'category' must be one of the provided options.
+        - The 'category' MUST be exactly one of the provided options.
         - If no line items are discernible, return an empty array for 'items'.
         `;
 

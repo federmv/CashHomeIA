@@ -1,3 +1,4 @@
+
 {
   "header": {
     "dashboard": "Dashboard",
@@ -23,6 +24,9 @@
     "uploadOr": "or drag and drop",
     "uploadHint": "PDF, DOC, XLS, PNG, JPG",
     "analyzingFile": "Analyzing {{fileName}}...",
+    "analyzingStep1": "Reading file...",
+    "analyzingStep2": "Consulting AI...",
+    "analyzingStep3": "Preparing review...",
     "thisMayTakeAMoment": "This may take a moment.",
     "searchPlaceholder": "Search provider, item...",
     "newInvoice": "New Invoice",
@@ -98,6 +102,18 @@
       "confirm": "Confirm"
     }
   },
+  "settings": {
+    "title": "Category Settings",
+    "expenseCategories": "Expenses",
+    "incomeCategories": "Income",
+    "addPlaceholder": "Add new category...",
+    "custom": "Custom Categories",
+    "defaults": "Default Categories",
+    "noCustomCategories": "No custom categories added.",
+    "categoryAdded": "Category added successfully.",
+    "categoryRemoved": "Category removed.",
+    "categoryExists": "This category already exists."
+  },
   "login": {
     "subtitle": "Your AI-Powered Financial Hub",
     "welcome": "Welcome Back",
@@ -132,7 +148,8 @@
     "incomeDeleteError": "Could not delete income.",
     "fillProviderAndItems": "Please fill in the provider and ensure all items are complete.",
     "fillSourceAndAmount": "Please fill in the source and enter a positive amount.",
-    "fillDisplayName": "Please enter a display name."
+    "fillDisplayName": "Please enter a display name.",
+    "recurringProcessed": "Processed {{count}} recurring invoices."
   },
   "dateFilters": {
     "all": "All Time",

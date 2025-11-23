@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Invoice, InvoiceItem } from '../types';
@@ -6,6 +7,7 @@ import { PlusIcon } from './icons/PlusIcon';
 import { TrashIcon } from './icons/TrashIcon';
 import { SpinnerIcon } from './icons/SpinnerIcon';
 import { toast } from 'react-hot-toast';
+import { useData } from '../contexts/DataContext';
 
 interface ManualInvoiceModalProps {
     isOpen: boolean;
@@ -19,20 +21,17 @@ const emptyItem: InvoiceItem = { description: '', quantity: 1, unitPrice: 0, tot
 
 const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({ isOpen, onClose, onAddInvoice, onUpdateInvoice, invoiceToEdit }) => {
     const { t, i18n } = useTranslation();
+    const { expenseCategories } = useData();
     const isEditMode = !!invoiceToEdit;
     
-    const EXPENSE_CATEGORIES = useMemo(() => [
-        t('expenseCategories.software'), t('expenseCategories.utilities'), t('expenseCategories.office'),
-        t('expenseCategories.marketing'), t('expenseCategories.travel'), t('expenseCategories.meals'),
-        t('expenseCategories.services'), t('expenseCategories.rent'), t('expenseCategories.payroll'),
-        t('expenseCategories.inventory'), t('expenseCategories.other')
-    ], [t]);
+    // Use categories from context, fallback if empty (shouldn't happen due to defaults)
+    const categories = expenseCategories.length > 0 ? expenseCategories : [t('expenseCategories.other')];
 
     const [provider, setProvider] = useState('');
     const [date, setDate] = useState('');
     const [items, setItems] = useState<InvoiceItem[]>([{ ...emptyItem }]);
     const [tax, setTax] = useState(0);
-    const [category, setCategory] = useState(EXPENSE_CATEGORIES[0]);
+    const [category, setCategory] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     const [isRecurring, setIsRecurring] = useState(false);
     const [recurringFrequency, setRecurringFrequency] = useState<'monthly' | 'yearly'>('monthly');
@@ -59,7 +58,7 @@ const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({ isOpen, onClose
         setDate(today);
         setItems([{ ...emptyItem }]);
         setTax(0);
-        setCategory(EXPENSE_CATEGORIES[0]);
+        setCategory(categories[0]);
         setIsRecurring(false);
         setRecurringFrequency('monthly');
         setRecurringStartDate(today);
@@ -72,7 +71,7 @@ const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({ isOpen, onClose
                 setDate(invoiceToEdit.date);
                 setItems(invoiceToEdit.items.length > 0 ? invoiceToEdit.items : [{...emptyItem}]);
                 setTax(invoiceToEdit.tax);
-                setCategory(invoiceToEdit.category || EXPENSE_CATEGORIES[0]);
+                setCategory(invoiceToEdit.category || categories[0]);
                 setIsRecurring(invoiceToEdit.isRecurring || false);
                 setRecurringFrequency(invoiceToEdit.recurringFrequency || 'monthly');
                 setRecurringStartDate(invoiceToEdit.recurringStartDate || invoiceToEdit.date);
@@ -80,7 +79,7 @@ const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({ isOpen, onClose
                 resetForm();
             }
         }
-    }, [isOpen, isEditMode, invoiceToEdit, EXPENSE_CATEGORIES]);
+    }, [isOpen, isEditMode, invoiceToEdit, categories]);
 
     const handleItemChange = (index: number, field: keyof Omit<InvoiceItem, 'total'>, value: string | number) => {
         const newItems = [...items];
@@ -201,7 +200,7 @@ const ManualInvoiceModal: React.FC<ManualInvoiceModalProps> = ({ isOpen, onClose
                         <div>
                              <label htmlFor="category" className="block text-sm font-medium text-brand-text-secondary mb-2">{t('modals.category')}</label>
                              <select id="category" value={category} onChange={e => setCategory(e.target.value)} className="w-full bg-brand-primary border border-brand-text-secondary/50 rounded-lg px-4 py-2 text-white focus:ring-brand-accent focus:border-brand-accent transition">
-                                {EXPENSE_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                                {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                              </select>
                         </div>
 

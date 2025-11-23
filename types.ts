@@ -1,3 +1,4 @@
+
 export interface InvoiceItem {
   description: string;
   quantity: number;
@@ -18,6 +19,7 @@ export interface Invoice {
   isRecurring?: boolean;
   recurringFrequency?: 'monthly' | 'yearly';
   recurringStartDate?: string;
+  lastProcessedDate?: string;
 }
 
 export interface Income {
@@ -48,4 +50,9 @@ export interface ParsedInvoice {
   total: number;
   items: InvoiceItem[];
   category: string;
+}
+
+export interface UserSettings {
+  customExpenseCategories?: string[];
+  customIncomeCategories?: string[];
 }

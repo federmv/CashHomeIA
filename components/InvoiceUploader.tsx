@@ -8,28 +8,51 @@ import { UploadIcon } from './icons/UploadIcon';
 import { SpinnerIcon } from './icons/SpinnerIcon';
 import { toast } from 'react-hot-toast';
 import { useData } from '../contexts/DataContext';
+import ManualInvoiceModal from './ManualInvoiceModal';
 
 const InvoiceUploader: React.FC = () => {
     const { t, i18n } = useTranslation();
-    const { addInvoice } = useData();
+    const { addInvoice, expenseCategories } = useData(); // Get full list from context
     const [isDragging, setIsDragging] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [loadingMessage, setLoadingMessage] = useState('');
     const [fileName, setFileName] = useState<string | null>(null);
+
+    // States for the review modal
+    const [reviewModalOpen, setReviewModalOpen] = useState(false);
+    const [parsedInvoice, setParsedInvoice] = useState<Invoice | null>(null);
 
     const handleFileProcessing = useCallback(async (file: File) => {
         if (!file) return;
         setIsLoading(true);
         setFileName(file.name);
+        setLoadingMessage(t('invoices.analyzingStep1'));
 
         try {
             const base64Data = await fileToBase64(file);
+            
+            setLoadingMessage(t('invoices.analyzingStep2'));
             const mimeType = getMimeType(file.name);
-            const parsedData = await analyzeInvoice({ mimeType, data: base64Data }, t, i18n.language);
+            
+            // Pass all available categories to AI for better classification
+            const parsedData = await analyzeInvoice(
+                { mimeType, data: base64Data }, 
+                t, 
+                i18n.language,
+                expenseCategories 
+            );
+            
+            setLoadingMessage(t('invoices.analyzingStep3'));
 
-            await addInvoice({
+            // Prepare data for the review modal
+            const tempInvoice: any = {
                 ...parsedData,
-                fileName: file.name,
-            });
+                id: 'temp', // Temporary ID
+                fileName: file.name
+            };
+            
+            setParsedInvoice(tempInvoice);
+            setReviewModalOpen(true);
 
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
@@ -38,8 +61,9 @@ const InvoiceUploader: React.FC = () => {
         } finally {
             setIsLoading(false);
             setFileName(null);
+            setLoadingMessage('');
         }
-    }, [addInvoice, t, i18n.language]);
+    }, [addInvoice, t, i18n.language, expenseCategories]);
 
     const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -70,6 +94,12 @@ const InvoiceUploader: React.FC = () => {
         }
     };
 
+    const handleConfirmInvoice = async (invoiceData: Omit<Invoice, 'id'>) => {
+        await addInvoice(invoiceData);
+        setReviewModalOpen(false);
+        setParsedInvoice(null);
+    };
+
     return (
         <div className="bg-brand-secondary p-6 rounded-xl border border-brand-accent/20">
             <h2 className="text-xl font-bold text-white mb-4">{t('invoices.uploadTitle')}</h2>
@@ -94,7 +124,7 @@ const InvoiceUploader: React.FC = () => {
                     {isLoading ? (
                         <>
                            <SpinnerIcon />
-                           <p className="text-brand-text-secondary">{t('invoices.analyzingFile', { fileName })}</p>
+                           <p className="text-brand-text-secondary font-medium animate-pulse">{loadingMessage}</p>
                            <p className="text-sm text-brand-text-secondary/70">{t('invoices.thisMayTakeAMoment')}</p>
                         </>
                     ) : (
@@ -108,6 +138,16 @@ const InvoiceUploader: React.FC = () => {
                     )}
                 </label>
             </div>
+
+            {reviewModalOpen && parsedInvoice && (
+                <ManualInvoiceModal 
+                    isOpen={reviewModalOpen}
+                    onClose={() => setReviewModalOpen(false)}
+                    onAddInvoice={handleConfirmInvoice}
+                    onUpdateInvoice={async () => {}} 
+                    invoiceToEdit={parsedInvoice} 
+                />
+            )}
         </div>
     );
 };

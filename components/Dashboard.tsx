@@ -3,17 +3,21 @@ import React, { useMemo, useState } from 'react';
 import { AreaChart, Area, Bar, BarChart, CartesianGrid, Cell, Legend, Pie as RechartsPie, PieChart, ResponsiveContainer, Sector, Tooltip, XAxis, YAxis } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { useData } from '../contexts/DataContext';
+import ManualInvoiceModal from './ManualInvoiceModal';
+import SettingsModal from './SettingsModal';
+import { PlusIcon } from './icons/PlusIcon';
+import { SettingsIcon } from './icons/SettingsIcon';
 
 const COLORS = ['#3E7BFA', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#3B82F6', '#EC4899', '#6366F1'];
 
-// FIX: The `activeIndex` prop is valid for this component, but the type definitions may be out of date.
-// This is a workaround to bypass an incorrect TypeScript error.
 const Pie = RechartsPie as any;
 
 const Dashboard: React.FC = () => {
     const { t, i18n } = useTranslation();
-    const { invoices, income } = useData();
+    const { invoices, income, exportData, addInvoice, updateInvoice } = useData();
     const [activeIndex, setActiveIndex] = useState(0);
+    const [isManualModalOpen, setIsManualModalOpen] = useState(false);
+    const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
     const formatCurrency = useMemo(() => (value: number) => {
         return new Intl.NumberFormat(i18n.language, { 
@@ -129,7 +133,38 @@ const Dashboard: React.FC = () => {
     
     return (
         <div className="space-y-8">
-            <h1 className="text-3xl font-bold text-white">{t('dashboard.title')}</h1>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <h1 className="text-3xl font-bold text-white">{t('dashboard.title')}</h1>
+                
+                <div className="flex flex-wrap items-center gap-3">
+                    <button
+                        onClick={() => setIsManualModalOpen(true)}
+                        className="flex items-center gap-2 bg-brand-accent text-white text-sm px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors shadow-glow"
+                    >
+                        <PlusIcon />
+                        <span>{t('invoices.newInvoice')}</span>
+                    </button>
+
+                    <button
+                        onClick={exportData}
+                        className="flex items-center gap-2 bg-brand-secondary hover:bg-brand-primary border border-brand-accent/30 text-white text-sm px-4 py-2 rounded-lg transition-colors"
+                        title="Export to CSV"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span className="hidden sm:inline">Export</span>
+                    </button>
+
+                    <button
+                        onClick={() => setIsSettingsModalOpen(true)}
+                        className="bg-brand-secondary hover:bg-brand-primary border border-brand-accent/30 text-white p-2 rounded-lg transition-colors"
+                        title={t('settings.title')}
+                    >
+                        <SettingsIcon />
+                    </button>
+                </div>
+            </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="bg-brand-secondary p-6 rounded-xl border border-brand-accent/20">
@@ -205,6 +240,18 @@ const Dashboard: React.FC = () => {
                     </ResponsiveContainer>
                 </div>
             </div>
+
+            <ManualInvoiceModal 
+                isOpen={isManualModalOpen}
+                onClose={() => setIsManualModalOpen(false)}
+                onAddInvoice={addInvoice}
+                onUpdateInvoice={updateInvoice}
+                invoiceToEdit={null}
+            />
+            <SettingsModal 
+                isOpen={isSettingsModalOpen}
+                onClose={() => setIsSettingsModalOpen(false)}
+            />
         </div>
     );
 };
