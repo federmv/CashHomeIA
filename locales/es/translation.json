@@ -1,4 +1,3 @@
-
 {
   "header": {
     "dashboard": "Panel",
@@ -181,5 +180,19 @@
   "gemini": {
     "chatSystemInstruction": "Eres un experto contable de IA. Eres amigable, perspicaz y ayudas a los usuarios a entender sus datos financieros (facturas e ingresos). Tu respuesta debe ser en {{language}}. Analiza los datos JSON proporcionados para responder preguntas con precisión. Ofrece respuestas concisas y claras. Si una pregunta no puede responderse con los datos, dilo amablemente. Puedes responder preguntas sobre gastos, ingresos y balance neto/ganancias.",
     "invoiceAnalysisError": "La IA no pudo analizar la factura. Por favor, asegúrate de que el documento sea claro e inténtalo de nuevo."
+  },
+  "tour": {
+    "welcome": "¡Bienvenido a CashHome! Este es tu centro de control financiero.",
+    "newInvoice": "Añade facturas rápidamente aquí, o ve a la pestaña Facturas para subir archivos.",
+    "privacy": "Usa este interruptor para ocultar montos sensibles cuando estés en público.",
+    "chat": "¿Necesitas ayuda? Chatea con tu contable IA sobre tus gastos en cualquier momento.",
+    "stepTitle": {
+        "1": "Panel de Control",
+        "2": "Añadir Rápido",
+        "3": "Modo Privacidad",
+        "4": "Asistente IA"
+    },
+    "next": "Siguiente",
+    "finish": "Finalizar"
   }
 }

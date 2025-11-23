@@ -1,17 +1,27 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { Toaster } from 'react-hot-toast';
 
 import { View } from './types';
 import Header from './components/Header';
-import Dashboard from './components/Dashboard';
-import InvoiceList from './components/InvoiceList';
-import IncomeList from './components/IncomeList';
-import InvoiceUploader from './components/InvoiceUploader';
 import ChatAssistant from './components/ChatAssistant';
 import Login from './components/Login';
+import TourGuide from './components/TourGuide';
 import { useAuth } from './contexts/AuthContext';
 import { DataProvider } from './contexts/DataContext';
+import { SpinnerIcon } from './components/icons/SpinnerIcon';
+
+// Lazy load main components for performance
+const Dashboard = React.lazy(() => import('./components/Dashboard'));
+const InvoiceList = React.lazy(() => import('./components/InvoiceList'));
+const IncomeList = React.lazy(() => import('./components/IncomeList'));
+const InvoiceUploader = React.lazy(() => import('./components/InvoiceUploader'));
+
+const SectionLoader = () => (
+    <div className="flex justify-center items-center h-64">
+        <SpinnerIcon />
+    </div>
+);
 
 function App() {
     const { user } = useAuth();
@@ -102,16 +112,19 @@ function App() {
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
                 >
-                    {currentView === View.DASHBOARD && <Dashboard />}
-                    {currentView === View.INVOICES && (
-                        <div className="space-y-8">
-                            <InvoiceUploader />
-                            <InvoiceList />
-                        </div>
-                    )}
-                    {currentView === View.INCOME && <IncomeList />}
+                    <Suspense fallback={<SectionLoader />}>
+                        {currentView === View.DASHBOARD && <Dashboard />}
+                        {currentView === View.INVOICES && (
+                            <div className="space-y-8">
+                                <InvoiceUploader />
+                                <InvoiceList />
+                            </div>
+                        )}
+                        {currentView === View.INCOME && <IncomeList />}
+                    </Suspense>
                 </main>
                 <ChatAssistant />
+                <TourGuide currentView={currentView} setCurrentView={setCurrentView} />
             </div>
         </DataProvider>
     );

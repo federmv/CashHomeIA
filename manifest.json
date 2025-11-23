@@ -1,4 +1,3 @@
-
 {
   "short_name": "CashHome",
   "name": "CashHome - AI Invoice Manager",
@@ -7,18 +6,7 @@
     {
       "src": "/icon.svg",
       "type": "image/svg+xml",
-      "sizes": "any",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icon.svg",
-      "type": "image/svg+xml",
-      "sizes": "192x192"
-    },
-    {
-      "src": "/icon.svg",
-      "type": "image/svg+xml",
-      "sizes": "512x512"
+      "sizes": "any"
     }
   ],
   "start_url": "/",

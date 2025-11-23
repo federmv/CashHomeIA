@@ -17,22 +17,24 @@ const Pie = RechartsPie as any;
 
 const Dashboard: React.FC = () => {
     const { t, i18n } = useTranslation();
-    const { invoices, income, exportData, addInvoice, updateInvoice } = useData();
+    const { invoices, income, exportData, addInvoice, updateInvoice, isPrivacyMode } = useData();
     const [activeIndex, setActiveIndex] = useState(0);
     const [isManualModalOpen, setIsManualModalOpen] = useState(false);
     const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
     const formatCurrency = useMemo(() => (value: number) => {
+        if (isPrivacyMode) return '****';
         return new Intl.NumberFormat(i18n.language, { 
             style: 'decimal', 
             minimumFractionDigits: 0,
             maximumFractionDigits: 0
         }).format(value);
-    }, [i18n.language]);
+    }, [i18n.language, isPrivacyMode]);
 
     const yAxisFormatter = useMemo(() => (value: number) => {
+        if (isPrivacyMode) return '****';
         return new Intl.NumberFormat(i18n.language, { notation: 'compact', compactDisplay: 'short' }).format(value);
-    }, [i18n.language]);
+    }, [i18n.language, isPrivacyMode]);
     
     const renderActiveShape = (props: any) => {
       const RADIAN = Math.PI / 180;
@@ -125,7 +127,7 @@ const Dashboard: React.FC = () => {
             const expensesPayload = payload.find(p => p.dataKey === 'expenses');
             return (
                 <div className="bg-brand-secondary/90 backdrop-blur-md p-4 border border-brand-border rounded-xl shadow-xl text-sm">
-                    <p className="label text-white font-bold mb-2 border-b border-white/10 pb-1">{`${label}`}</p>
+                    <p className="text-white font-bold mb-2 border-b border-white/10 pb-1">{`${label}`}</p>
                     {incomePayload && <p className="text-emerald-400 flex justify-between gap-4"><span>{t('header.income')}:</span> <span className="font-mono font-bold">{formatCurrency(incomePayload.value)}</span></p>}
                     {expensesPayload && <p className="text-red-400 flex justify-between gap-4"><span>Expenses:</span> <span className="font-mono font-bold">{formatCurrency(expensesPayload.value)}</span></p>}
                 </div>
@@ -134,7 +136,7 @@ const Dashboard: React.FC = () => {
         return null;
     };
 
-    const StatCard = ({ title, value, colorClass, icon, trend }: any) => (
+    const StatCard = ({ title, value, colorClass, icon }: any) => (
         <div className="group relative overflow-hidden bg-brand-surface backdrop-blur-md border border-brand-border rounded-2xl p-6 transition-all duration-300 hover:shadow-glow hover:-translate-y-1">
             <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-gradient-to-br from-white/5 to-transparent rounded-full blur-2xl group-hover:bg-brand-accent/10 transition-colors"></div>
             <div className="flex items-center justify-between mb-4">
@@ -157,6 +159,7 @@ const Dashboard: React.FC = () => {
                 
                 <div className="flex flex-wrap items-center gap-3">
                     <button
+                        id="tour-new-invoice"
                         onClick={() => setIsManualModalOpen(true)}
                         className="flex items-center gap-2 bg-brand-accent hover:bg-brand-accent-dark text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-brand-accent/25 hover:shadow-brand-accent/40 hover:-translate-y-0.5"
                     >
@@ -233,7 +236,7 @@ const Dashboard: React.FC = () => {
                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
                             <XAxis dataKey="name" stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} dy={10} />
                             <YAxis stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} tickFormatter={yAxisFormatter} />
-                            <Tooltip content={<CustomTooltip />} />
+                            <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 2 }} />
                             <Legend wrapperStyle={{paddingTop: '20px'}} iconType="circle" />
                             <Area type="monotone" dataKey="income" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorIncome)" name={t('header.income')} />
                             <Area type="monotone" dataKey="expenses" stroke="#EF4444" strokeWidth={3} fillOpacity={1} fill="url(#colorExpenses)" name={t('header.invoices')} />

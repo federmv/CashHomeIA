@@ -1,5 +1,4 @@
 
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getChatResponse } from '../services/geminiService';
@@ -53,6 +52,7 @@ const ChatAssistant: React.FC = () => {
         <>
             <div className="fixed bottom-6 right-6 z-50">
                 <button
+                    id="tour-chat"
                     onClick={() => setIsOpen(!isOpen)}
                     className="bg-brand-accent text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg shadow-brand-accent/50 hover:scale-110 transition-transform duration-300"
                 >

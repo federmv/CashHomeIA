@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { User } from 'firebase/auth';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +10,9 @@ import LanguageSwitcher from './LanguageSwitcher';
 import { signOut, getAuth } from 'firebase/auth';
 import { LogoutIcon } from './icons/LogoutIcon';
 import { useAuth } from '../contexts/AuthContext';
+import { useData } from '../contexts/DataContext';
+import { EyeIcon } from './icons/EyeIcon';
+import { EyeOffIcon } from './icons/EyeOffIcon';
 
 interface HeaderProps {
     currentView: View;
@@ -20,6 +22,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ currentView, setCurrentView }) => {
     const { t } = useTranslation();
     const { user } = useAuth();
+    const { isPrivacyMode, togglePrivacyMode } = useData();
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
     const [scrolled, setScrolled] = useState(false);
 
@@ -84,7 +87,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, setCurrentView }) => {
                 <div className="flex items-center justify-between">
                     {/* Logo & Nav */}
                     <div className="flex items-center gap-4 lg:gap-8">
-                        <div className="text-xl sm:text-2xl font-black tracking-tighter text-white flex-shrink-0 flex items-center">
+                        <div id="header-logo" className="text-xl sm:text-2xl font-black tracking-tighter text-white flex-shrink-0 flex items-center cursor-pointer" onClick={() => setCurrentView(View.DASHBOARD)}>
                            <span className="text-gradient">CashHome</span>
                         </div>
                         <nav className="hidden md:flex items-center space-x-1 bg-black/20 p-1 rounded-full border border-white/5">
@@ -116,6 +119,17 @@ const Header: React.FC<HeaderProps> = ({ currentView, setCurrentView }) => {
                                 </span>
                             </button>
                         )}
+                        
+                        {/* Privacy Toggle */}
+                        <button
+                            id="tour-privacy"
+                            onClick={togglePrivacyMode}
+                            className={`p-2 rounded-full transition-colors ${isPrivacyMode ? 'text-brand-accent bg-brand-accent/10' : 'text-brand-text-secondary hover:text-white hover:bg-white/5'}`}
+                            title="Toggle Privacy Mode"
+                        >
+                            {isPrivacyMode ? <EyeOffIcon /> : <EyeIcon />}
+                        </button>
+
                         <LanguageSwitcher />
                         <div className="hidden lg:block h-8 w-px bg-white/10 mx-2"></div>
                         <div className="text-right hidden lg:block">

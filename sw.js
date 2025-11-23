@@ -1,11 +1,8 @@
-const CACHE_NAME = 'cashhome-v2'; // Incremented version
+const CACHE_NAME = 'cashhome-v3'; // Incremented version
 const urlsToCache = [
   '/',
   '/index.html',
-  '/icon.svg',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/apple-touch-icon.png',
+  '/icon.svg', // We rely on SVG only
   '/manifest.json',
   '/index.tsx', // Pre-cache main script
 ];

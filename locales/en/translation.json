@@ -1,4 +1,3 @@
-
 {
   "header": {
     "dashboard": "Dashboard",
@@ -145,7 +144,7 @@
     "incomeUpdateError": "Could not update income.",
     "deletingIncome": "Deleting income...",
     "incomeDeleted": "Income deleted.",
-    "incomeDeleteError": "Could not delete income.",
+    "incomeDeleteError": "No se pudo eliminar el ingreso.",
     "fillProviderAndItems": "Please fill in the provider and ensure all items are complete.",
     "fillSourceAndAmount": "Please fill in the source and enter a positive amount.",
     "fillDisplayName": "Please enter a display name.",
@@ -181,5 +180,19 @@
   "gemini": {
     "chatSystemInstruction": "You are an expert AI accountant. You are friendly, insightful, and help users understand their financial data (invoices and income). Your response must be in {{language}}. Analyze the provided JSON data to answer questions accurately. Provide concise and clear answers. If a question cannot be answered from the data, say so politely. You can answer questions about expenses, income, and net balance/profit.",
     "invoiceAnalysisError": "The AI failed to analyze the invoice. Please ensure the document is clear and try again."
+  },
+  "tour": {
+    "welcome": "Welcome to CashHome! This is your command center for financial health.",
+    "newInvoice": "Quickly add invoices here, or go to the Invoices tab to upload files.",
+    "privacy": "Use this toggle to hide sensitive amounts when you are in public.",
+    "chat": "Need help? Chat with your AI accountant about your expenses anytime.",
+    "stepTitle": {
+        "1": "Dashboard",
+        "2": "Quick Add",
+        "3": "Privacy Mode",
+        "4": "AI Assistant"
+    },
+    "next": "Next",
+    "finish": "Finish"
   }
 }

@@ -8,10 +8,19 @@ import { EditIcon } from './icons/EditIcon';
 import ManualIncomeModal from './ManualIncomeModal';
 import ConfirmationModal from './ConfirmationModal';
 import { useData } from '../contexts/DataContext';
+import { SpinnerIcon } from './icons/SpinnerIcon';
 
 const IncomeList: React.FC = () => {
     const { t, i18n } = useTranslation();
-    const { income, deleteIncome, addIncome, updateIncome } = useData();
+    const { 
+        income, 
+        deleteIncome, 
+        addIncome, 
+        updateIncome,
+        loadMoreIncome,
+        isLoadingIncome,
+        hasMoreIncome
+    } = useData();
     const [searchTerm, setSearchTerm] = useState('');
     const [dateFilter, setDateFilter] = useState('all');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,7 +67,7 @@ const IncomeList: React.FC = () => {
             }
 
             return true;
-        }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        });
     }, [income, searchTerm, dateFilter]);
 
     const handleOpenEditModal = (income: Income) => {
@@ -126,7 +135,7 @@ const IncomeList: React.FC = () => {
                 </div>
             </div>
             
-            {filteredIncome.length === 0 ? (
+            {filteredIncome.length === 0 && !isLoadingIncome ? (
                 <div className="text-center py-16 bg-brand-surface border border-brand-border rounded-2xl backdrop-blur-md">
                     <div className="w-16 h-16 bg-brand-secondary/50 rounded-full flex items-center justify-center mx-auto mb-4">
                         <PlusIcon />
@@ -142,55 +151,70 @@ const IncomeList: React.FC = () => {
                     </button>
                 </div>
             ) : (
-                <div className="overflow-x-auto">
-                     <table className="w-full border-separate border-spacing-y-3">
-                        <thead>
-                            <tr className="text-brand-text-secondary text-xs uppercase tracking-wider">
-                                <th className="px-4 pb-2 text-left">{t('income.source')}</th>
-                                <th className="px-4 pb-2 text-left hidden lg:table-cell">{t('income.category')}</th>
-                                <th className="px-4 pb-2 text-left hidden md:table-cell">{t('income.description')}</th>
-                                <th className="px-4 pb-2 text-left hidden sm:table-cell">{t('income.date')}</th>
-                                <th className="px-4 pb-2 text-right">{t('income.amount')}</th>
-                                <th className="px-4 pb-2 text-center">{t('income.actions')}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredIncome.map(inc => (
-                                <tr key={inc.id} className="bg-brand-surface backdrop-blur-md hover:bg-brand-secondary/80 transition-all duration-200 shadow-sm hover:shadow-md group">
-                                    <td className="p-4 rounded-l-xl border-y border-l border-brand-border group-hover:border-emerald-500/30 font-bold text-white">
-                                        <div className="flex flex-col">
-                                            <span>{inc.source}</span>
-                                            <span className="text-xs text-brand-text-secondary font-normal sm:hidden">{formatDate(inc.date)}</span>
-                                        </div>
-                                    </td>
-                                    <td className="p-4 border-y border-brand-border group-hover:border-emerald-500/30 hidden lg:table-cell">
-                                         <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-brand-text-secondary border border-white/10">
-                                            {inc.category}
-                                        </span>
-                                    </td>
-                                    <td className="p-4 border-y border-brand-border group-hover:border-emerald-500/30 text-brand-text-secondary text-sm hidden md:table-cell">{inc.description}</td>
-                                    <td className="p-4 border-y border-brand-border group-hover:border-emerald-500/30 text-brand-text-secondary text-sm hidden sm:table-cell">{formatDate(inc.date)}</td>
-                                    <td className="p-4 border-y border-brand-border group-hover:border-emerald-500/30 text-emerald-400 font-mono font-bold text-right">{formatCurrency(inc.amount)}</td>
-                                    <td className="p-4 rounded-r-xl border-y border-r border-brand-border group-hover:border-emerald-500/30 text-center">
-                                        <div className="flex justify-center items-center gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
-                                            <button
-                                                onClick={() => handleOpenEditModal(inc)}
-                                                className="text-emerald-400 hover:text-white p-2 rounded-lg hover:bg-emerald-500"
-                                            >
-                                                <EditIcon />
-                                            </button>
-                                            <button 
-                                                onClick={() => handleOpenDeleteConfirm(inc)} 
-                                                className="text-red-400 hover:text-white p-2 rounded-lg hover:bg-red-500"
-                                            >
-                                                <TrashIcon />
-                                            </button>
-                                        </div>
-                                    </td>
+                <div className="space-y-4">
+                    <div className="overflow-x-auto">
+                        <table className="w-full border-separate border-spacing-y-3">
+                            <thead>
+                                <tr className="text-brand-text-secondary text-xs uppercase tracking-wider">
+                                    <th className="px-4 pb-2 text-left">{t('income.source')}</th>
+                                    <th className="px-4 pb-2 text-left hidden lg:table-cell">{t('income.category')}</th>
+                                    <th className="px-4 pb-2 text-left hidden md:table-cell">{t('income.description')}</th>
+                                    <th className="px-4 pb-2 text-left hidden sm:table-cell">{t('income.date')}</th>
+                                    <th className="px-4 pb-2 text-right">{t('income.amount')}</th>
+                                    <th className="px-4 pb-2 text-center">{t('income.actions')}</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {filteredIncome.map(inc => (
+                                    <tr key={inc.id} className="bg-brand-surface backdrop-blur-md hover:bg-brand-secondary/80 transition-all duration-200 shadow-sm hover:shadow-md group">
+                                        <td className="p-4 rounded-l-xl border-y border-l border-brand-border group-hover:border-emerald-500/30 font-bold text-white">
+                                            <div className="flex flex-col">
+                                                <span>{inc.source}</span>
+                                                <span className="text-xs text-brand-text-secondary font-normal sm:hidden">{formatDate(inc.date)}</span>
+                                            </div>
+                                        </td>
+                                        <td className="p-4 border-y border-brand-border group-hover:border-emerald-500/30 hidden lg:table-cell">
+                                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-brand-text-secondary border border-white/10">
+                                                {inc.category}
+                                            </span>
+                                        </td>
+                                        <td className="p-4 border-y border-brand-border group-hover:border-emerald-500/30 text-brand-text-secondary text-sm hidden md:table-cell">{inc.description}</td>
+                                        <td className="p-4 border-y border-brand-border group-hover:border-emerald-500/30 text-brand-text-secondary text-sm hidden sm:table-cell">{formatDate(inc.date)}</td>
+                                        <td className="p-4 border-y border-brand-border group-hover:border-emerald-500/30 text-emerald-400 font-mono font-bold text-right">{formatCurrency(inc.amount)}</td>
+                                        <td className="p-4 rounded-r-xl border-y border-r border-brand-border group-hover:border-emerald-500/30 text-center">
+                                            <div className="flex justify-center items-center gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
+                                                <button
+                                                    onClick={() => handleOpenEditModal(inc)}
+                                                    className="text-emerald-400 hover:text-white p-2 rounded-lg hover:bg-emerald-500"
+                                                >
+                                                    <EditIcon />
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleOpenDeleteConfirm(inc)} 
+                                                    className="text-red-400 hover:text-white p-2 rounded-lg hover:bg-red-500"
+                                                >
+                                                    <TrashIcon />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Load More Button */}
+                    {hasMoreIncome && (
+                         <div className="flex justify-center pt-4">
+                            <button
+                                onClick={loadMoreIncome}
+                                disabled={isLoadingIncome}
+                                className="px-6 py-2 rounded-xl bg-brand-secondary hover:bg-brand-surface border border-brand-border text-brand-text-secondary hover:text-white transition-all text-sm font-semibold flex items-center gap-2"
+                            >
+                                {isLoadingIncome ? <SpinnerIcon /> : "Load More Income"}
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
             <ManualIncomeModal 

@@ -13,29 +13,45 @@ import {
     where,
     writeBatch,
     setDoc,
-    getDoc
+    getDoc,
+    limit,
+    startAfter,
+    DocumentData,
+    QueryDocumentSnapshot
 } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { Invoice, Income, UserSettings } from '../types';
 
 // === INVOICE FUNCTIONS ===
 
-export const getInvoices = (userId: string, callback: (invoices: Invoice[]) => void): (() => void) => {
+// Modified for Pagination
+export const getPaginatedInvoices = async (
+    userId: string, 
+    lastVisible: QueryDocumentSnapshot<DocumentData> | null, 
+    pageSize: number = 20
+): Promise<{ invoices: Invoice[], lastDoc: QueryDocumentSnapshot<DocumentData> | null }> => {
     const invoicesCol = collection(db, 'users', userId, 'invoices');
-    const q = query(invoicesCol, orderBy('date', 'desc'));
     
-    return onSnapshot(q, (snapshot) => {
-        const invoices = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        } as Invoice));
-        callback(invoices);
-    });
+    let q = query(invoicesCol, orderBy('date', 'desc'), limit(pageSize));
+    
+    if (lastVisible) {
+        q = query(q, startAfter(lastVisible));
+    }
+    
+    const snapshot = await getDocs(q);
+    const invoices = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    } as Invoice));
+
+    const lastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+
+    return { invoices, lastDoc };
 };
 
-export const addInvoice = (userId: string, invoice: Omit<Invoice, 'id'>): Promise<void> => {
+export const addInvoice = (userId: string, invoice: Omit<Invoice, 'id'>): Promise<string> => {
     const invoicesCol = collection(db, 'users', userId, 'invoices');
-    return addDoc(invoicesCol, invoice).then(() => {});
+    return addDoc(invoicesCol, invoice).then(docRef => docRef.id);
 };
 
 export const updateInvoice = (userId: string, invoiceId: string, invoiceData: Omit<Invoice, 'id'>): Promise<void> => {
@@ -119,22 +135,33 @@ export const processRecurringInvoices = async (userId: string): Promise<number> 
 
 // === INCOME FUNCTIONS ===
 
-export const getIncome = (userId: string, callback: (income: Income[]) => void): (() => void) => {
+// Modified for Pagination
+export const getPaginatedIncome = async (
+    userId: string, 
+    lastVisible: QueryDocumentSnapshot<DocumentData> | null, 
+    pageSize: number = 20
+): Promise<{ income: Income[], lastDoc: QueryDocumentSnapshot<DocumentData> | null }> => {
     const incomeCol = collection(db, 'users', userId, 'income');
-    const q = query(incomeCol, orderBy('date', 'desc'));
+    let q = query(incomeCol, orderBy('date', 'desc'), limit(pageSize));
+    
+    if (lastVisible) {
+        q = query(q, startAfter(lastVisible));
+    }
 
-    return onSnapshot(q, (snapshot) => {
-        const income = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        } as Income));
-        callback(income);
-    });
+    const snapshot = await getDocs(q);
+    const income = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    } as Income));
+    
+    const lastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+
+    return { income, lastDoc };
 };
 
-export const addIncome = (userId: string, income: Omit<Income, 'id'>): Promise<void> => {
+export const addIncome = (userId: string, income: Omit<Income, 'id'>): Promise<string> => {
     const incomeCol = collection(db, 'users', userId, 'income');
-    return addDoc(incomeCol, income).then(() => {});
+    return addDoc(incomeCol, income).then(docRef => docRef.id);
 };
 
 export const updateIncome = (userId: string, incomeId: string, incomeData: Omit<Income, 'id'>): Promise<void> => {
