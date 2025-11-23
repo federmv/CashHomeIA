@@ -2,14 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- PWA Icons - Using SVG for all to avoid 404s on missing PNGs -->
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.svg">
+    <!-- PWA Icons - Version param added to bust cache -->
+    <link rel="icon" href="/icon.svg?v=2" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.svg?v=2">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CashHome - AI Invoice Manager</title>
     
-    <!-- PWA Manifest & Theme -->
+    <!-- PWA Manifest & Theme - Version removed to match SW cache -->
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#0F172A">
     <meta name="description" content="A modern web app to automatically manage invoices using AI. Upload files, and the AI extracts all relevant data.">

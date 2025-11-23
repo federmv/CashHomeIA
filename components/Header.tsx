@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { User } from 'firebase/auth';
 import { useTranslation } from 'react-i18next';
@@ -5,7 +6,7 @@ import { View } from '../types';
 import { ChartIcon } from './icons/ChartIcon';
 import { InvoicesIcon } from './icons/InvoicesIcon';
 import { IncomeIcon } from './icons/IncomeIcon';
-import { InstallIcon } from './icons/InstallIcon';
+import { AppLogo } from './icons/AppLogo';
 import LanguageSwitcher from './LanguageSwitcher';
 import { signOut, getAuth } from 'firebase/auth';
 import { LogoutIcon } from './icons/LogoutIcon';
@@ -23,7 +24,6 @@ const Header: React.FC<HeaderProps> = ({ currentView, setCurrentView }) => {
     const { t } = useTranslation();
     const { user } = useAuth();
     const { isPrivacyMode, togglePrivacyMode } = useData();
-    const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
@@ -32,31 +32,10 @@ const Header: React.FC<HeaderProps> = ({ currentView, setCurrentView }) => {
         };
         window.addEventListener('scroll', handleScroll);
 
-        if ((window as any).deferredPrompt) {
-            setDeferredPrompt((window as any).deferredPrompt);
-        }
-
-        const handleBeforeInstallPrompt = (e: any) => {
-            e.preventDefault();
-            setDeferredPrompt(e);
-        };
-
-        window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
         return () => {
             window.removeEventListener('scroll', handleScroll);
-            window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
         };
     }, []);
-
-    const handleInstallClick = async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log(`User response to the install prompt: ${outcome}`);
-        setDeferredPrompt(null);
-        (window as any).deferredPrompt = null;
-    };
 
     const NavButton = ({ view, icon, text }: { view: View, icon: React.ReactElement, text: string }) => (
         <button
@@ -83,17 +62,18 @@ const Header: React.FC<HeaderProps> = ({ currentView, setCurrentView }) => {
 
     return (
         <header className={`sticky top-4 z-50 mx-4 lg:mx-auto max-w-7xl transition-all duration-500 ${scrolled ? 'translate-y-0' : 'translate-y-0'}`}>
-             <div className="bg-brand-surface backdrop-blur-xl border border-brand-border rounded-2xl shadow-glass px-4 py-3 sm:px-6">
+                <div className="bg-brand-surface backdrop-blur-xl border border-brand-border rounded-2xl shadow-glass px-4 py-3 sm:px-6">
                 <div className="flex items-center justify-between">
                     {/* Logo & Nav */}
                     <div className="flex items-center gap-4 lg:gap-8">
-                        <div id="header-logo" className="text-xl sm:text-2xl font-black tracking-tighter text-white flex-shrink-0 flex items-center cursor-pointer" onClick={() => setCurrentView(View.DASHBOARD)}>
-                           <span className="text-gradient">CashHome</span>
+                        <div id="header-logo" className="flex-shrink-0 flex items-center cursor-pointer gap-3" onClick={() => setCurrentView(View.DASHBOARD)}>
+                            <AppLogo className="h-9 w-9 shadow-md rounded-xl" />
+                            <span className="text-xl sm:text-2xl font-black tracking-tighter text-white text-gradient">CashHome</span>
                         </div>
                         <nav className="hidden md:flex items-center space-x-1 bg-black/20 p-1 rounded-full border border-white/5">
-                           <NavButton view={View.DASHBOARD} icon={<ChartIcon />} text={t('header.dashboard')} />
-                           <NavButton view={View.INVOICES} icon={<InvoicesIcon />} text={t('header.invoices')} />
-                           <NavButton view={View.INCOME} icon={<IncomeIcon />} text={t('header.income')} />
+                            <NavButton view={View.DASHBOARD} icon={<ChartIcon />} text={t('header.dashboard')} />
+                            <NavButton view={View.INVOICES} icon={<InvoicesIcon />} text={t('header.invoices')} />
+                            <NavButton view={View.INCOME} icon={<IncomeIcon />} text={t('header.income')} />
                         </nav>
                     </div>
                     
@@ -106,20 +86,6 @@ const Header: React.FC<HeaderProps> = ({ currentView, setCurrentView }) => {
 
                     {/* Actions */}
                     <div className="flex items-center gap-2 sm:gap-3">
-                        {deferredPrompt && (
-                             <button
-                                onClick={handleInstallClick}
-                                className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full p-2 sm:px-4 sm:py-2 shadow-glow hover:opacity-90 transition-all"
-                                title={t('header.installApp')}
-                            >
-                                <div className="sm:hidden"><InstallIcon /></div>
-                                <span className="hidden sm:flex items-center gap-2 text-sm font-semibold">
-                                    <InstallIcon />
-                                    <span>{t('header.installApp')}</span>
-                                </span>
-                            </button>
-                        )}
-                        
                         {/* Privacy Toggle */}
                         <button
                             id="tour-privacy"
@@ -133,8 +99,8 @@ const Header: React.FC<HeaderProps> = ({ currentView, setCurrentView }) => {
                         <LanguageSwitcher />
                         <div className="hidden lg:block h-8 w-px bg-white/10 mx-2"></div>
                         <div className="text-right hidden lg:block">
-                           <p className="text-xs text-brand-text-secondary font-medium uppercase tracking-wider">Welcome</p>
-                           <p className="text-sm text-white font-semibold truncate max-w-[120px]">{user.displayName || 'User'}</p>
+                            <p className="text-xs text-brand-text-secondary font-medium uppercase tracking-wider">Welcome</p>
+                            <p className="text-sm text-white font-semibold truncate max-w-[120px]">{user.displayName || 'User'}</p>
                         </div>
                         <button
                             onClick={handleSignOut}

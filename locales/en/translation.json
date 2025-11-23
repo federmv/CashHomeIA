@@ -1,10 +1,10 @@
+
 {
   "header": {
     "dashboard": "Dashboard",
     "invoices": "Invoices",
     "income": "Income",
-    "logout": "Logout",
-    "installApp": "Install App"
+    "logout": "Logout"
   },
   "dashboard": {
     "title": "Dashboard",

@@ -1,10 +1,10 @@
+
 {
   "header": {
     "dashboard": "Panel",
     "invoices": "Facturas",
     "income": "Ingresos",
-    "logout": "Cerrar Sesión",
-    "installApp": "Instalar App"
+    "logout": "Cerrar Sesión"
   },
   "dashboard": {
     "title": "Panel de Control",

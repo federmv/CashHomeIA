@@ -1,14 +1,15 @@
-const CACHE_NAME = 'cashhome-v3'; // Incremented version
+const CACHE_NAME = 'cashhome-v6'; // Incremented version to force update
 const urlsToCache = [
   '/',
   '/index.html',
-  '/icon.svg', // We rely on SVG only
-  '/manifest.json',
-  '/index.tsx', // Pre-cache main script
+  '/index.tsx', // Critical for offline check
+  '/icon.svg',
+  '/manifest.json'
 ];
 
 // On install, cache the app shell
 self.addEventListener('install', event => {
+  self.skipWaiting(); // Force activation immediately
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
@@ -70,4 +71,5 @@ self.addEventListener('activate', event => {
       );
     })
   );
+  return self.clients.claim(); // Take control immediately
 });

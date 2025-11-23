@@ -1,4 +1,5 @@
 {
+  "id": "/",
   "short_name": "CashHome",
   "name": "CashHome - AI Invoice Manager",
   "description": "A modern web app to automatically manage invoices using AI. Upload files, and the AI extracts all relevant data.",
@@ -6,12 +7,20 @@
     {
       "src": "/icon.svg",
       "type": "image/svg+xml",
-      "sizes": "any"
+      "sizes": "any",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "maskable"
     }
   ],
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "theme_color": "#0D0D2B",
-  "background_color": "#0D0D2B"
+  "background_color": "#0D0D2B",
+  "categories": ["finance", "productivity", "utilities"]
 }
