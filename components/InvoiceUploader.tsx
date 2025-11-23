@@ -12,13 +12,12 @@ import ManualInvoiceModal from './ManualInvoiceModal';
 
 const InvoiceUploader: React.FC = () => {
     const { t, i18n } = useTranslation();
-    const { addInvoice, expenseCategories } = useData(); // Get full list from context
+    const { addInvoice, expenseCategories } = useData();
     const [isDragging, setIsDragging] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [loadingMessage, setLoadingMessage] = useState('');
     const [fileName, setFileName] = useState<string | null>(null);
 
-    // States for the review modal
     const [reviewModalOpen, setReviewModalOpen] = useState(false);
     const [parsedInvoice, setParsedInvoice] = useState<Invoice | null>(null);
 
@@ -30,11 +29,9 @@ const InvoiceUploader: React.FC = () => {
 
         try {
             const base64Data = await fileToBase64(file);
-            
             setLoadingMessage(t('invoices.analyzingStep2'));
             const mimeType = getMimeType(file.name);
             
-            // Pass all available categories to AI for better classification
             const parsedData = await analyzeInvoice(
                 { mimeType, data: base64Data }, 
                 t, 
@@ -44,10 +41,9 @@ const InvoiceUploader: React.FC = () => {
             
             setLoadingMessage(t('invoices.analyzingStep3'));
 
-            // Prepare data for the review modal
             const tempInvoice: any = {
                 ...parsedData,
-                id: 'temp', // Temporary ID
+                id: 'temp',
                 fileName: file.name
             };
             
@@ -101,42 +97,65 @@ const InvoiceUploader: React.FC = () => {
     };
 
     return (
-        <div className="bg-brand-secondary p-6 rounded-xl border border-brand-accent/20">
-            <h2 className="text-xl font-bold text-white mb-4">{t('invoices.uploadTitle')}</h2>
-            <div
-                onDragEnter={handleDragEnter}
-                onDragLeave={handleDragLeave}
-                onDragOver={handleDragOver}
-                onDrop={handleDrop}
-                className={`relative border-2 border-dashed rounded-lg p-12 text-center transition-colors duration-300 ${
-                    isDragging ? 'border-brand-accent bg-brand-accent/10' : 'border-brand-text-secondary/50'
-                }`}
-            >
-                <input
-                    type="file"
-                    id="file-upload"
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    onChange={handleFileChange}
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
-                    disabled={isLoading}
-                />
-                <label htmlFor="file-upload" className="flex flex-col items-center justify-center space-y-4">
-                    {isLoading ? (
-                        <>
-                           <SpinnerIcon />
-                           <p className="text-brand-text-secondary font-medium animate-pulse">{loadingMessage}</p>
-                           <p className="text-sm text-brand-text-secondary/70">{t('invoices.thisMayTakeAMoment')}</p>
-                        </>
-                    ) : (
-                        <>
-                            <UploadIcon />
-                            <p className="text-brand-text-secondary">
-                                <span className="font-semibold text-brand-accent">{t('invoices.uploadCta')}</span> {t('invoices.uploadOr')}
-                            </p>
-                            <p className="text-xs text-brand-text-secondary/70">{t('invoices.uploadHint')}</p>
-                        </>
-                    )}
-                </label>
+        <div className="bg-brand-surface backdrop-blur-md p-1 rounded-2xl border border-brand-border shadow-lg overflow-hidden relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-brand-accent/10 via-purple-500/10 to-brand-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+            <div className="bg-brand-secondary/80 rounded-xl p-8 relative z-10">
+                <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                    <div className="p-2 bg-brand-accent/20 rounded-lg text-brand-accent">
+                         <UploadIcon />
+                    </div>
+                    {t('invoices.uploadTitle')}
+                </h2>
+                <div
+                    onDragEnter={handleDragEnter}
+                    onDragLeave={handleDragLeave}
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
+                    className={`relative border-2 border-dashed rounded-xl p-12 text-center transition-all duration-300 group-hover:border-brand-accent/50 ${
+                        isDragging 
+                        ? 'border-brand-accent bg-brand-accent/10 scale-[1.02]' 
+                        : 'border-brand-text-secondary/30 hover:bg-white/5'
+                    }`}
+                >
+                    <input
+                        type="file"
+                        id="file-upload"
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                        onChange={handleFileChange}
+                        accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+                        disabled={isLoading}
+                    />
+                    <label htmlFor="file-upload" className="flex flex-col items-center justify-center space-y-4 relative z-10 pointer-events-none">
+                        {isLoading ? (
+                            <div className="flex flex-col items-center animate-pulse">
+                               <div className="mb-4 p-4 bg-brand-accent/10 rounded-full">
+                                    <SpinnerIcon />
+                               </div>
+                               <p className="text-brand-accent font-bold text-lg">{loadingMessage}</p>
+                               <p className="text-sm text-brand-text-secondary">{t('invoices.thisMayTakeAMoment')}</p>
+                            </div>
+                        ) : (
+                            <>
+                                <div className={`p-4 rounded-full transition-all duration-500 ${isDragging ? 'bg-brand-accent text-white shadow-glow' : 'bg-brand-surface text-brand-text-secondary'}`}>
+                                     <UploadIcon />
+                                </div>
+                                <div>
+                                    <p className="text-lg text-white font-medium mb-1">
+                                        {t('invoices.uploadCta')}
+                                    </p>
+                                    <p className="text-sm text-brand-text-secondary">
+                                        {t('invoices.uploadOr')}
+                                    </p>
+                                </div>
+                                <div className="flex gap-2 mt-2">
+                                    {['PDF', 'JPG', 'PNG', 'XLS'].map(ext => (
+                                        <span key={ext} className="text-[10px] font-bold bg-white/5 text-brand-text-secondary px-2 py-1 rounded border border-white/5">{ext}</span>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                    </label>
+                </div>
             </div>
 
             {reviewModalOpen && parsedInvoice && (

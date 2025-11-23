@@ -83,12 +83,13 @@ function App() {
 
     return (
         <DataProvider onViewChange={setCurrentView}>
-            <div className="min-h-screen bg-brand-primary font-sans overflow-hidden">
+            <div className="min-h-screen font-sans overflow-hidden">
                 <Toaster position="top-center" toastOptions={{
                     style: {
-                        background: '#1E1E3F',
+                        background: 'rgba(30, 41, 59, 0.9)',
+                        backdropFilter: 'blur(10px)',
                         color: '#FFFFFF',
-                        border: '1px solid #3E7BFA',
+                        border: '1px solid rgba(99, 102, 241, 0.5)',
                     },
                 }} />
                 <Header
@@ -96,7 +97,7 @@ function App() {
                     setCurrentView={handleHeaderNavigation}
                 />
                 <main
-                    className={`p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto ${animationClass}`}
+                    className={`p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto pb-24 ${animationClass}`}
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}

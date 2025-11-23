@@ -32,10 +32,9 @@ const InvoiceList: React.FC = () => {
     }, [i18n.language]);
 
     const formatDate = useMemo(() => (dateString: string) => {
-        // FIX: Corrected typo from toLocaleDateDateString to toLocaleDateString.
         return new Date(dateString).toLocaleDateString(i18n.language, {
             year: 'numeric',
-            month: 'long',
+            month: 'short',
             day: 'numeric',
         });
     }, [i18n.language]);
@@ -109,14 +108,14 @@ const InvoiceList: React.FC = () => {
     };
 
     return (
-        <div className="bg-brand-secondary p-4 sm:p-6 rounded-xl border border-brand-accent/20">
-            <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
-                <h2 className="text-xl font-bold text-white">{t('invoices.title')}</h2>
-                <div className="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-2">
+        <div className="space-y-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-brand-surface backdrop-blur-md border border-brand-border p-4 rounded-2xl shadow-sm">
+                <h2 className="text-xl font-bold text-white pl-2 border-l-4 border-brand-accent">{t('invoices.title')}</h2>
+                <div className="w-full md:w-auto flex flex-col sm:flex-row items-center gap-3">
                    <select
                         value={dateFilter}
                         onChange={e => setDateFilter(e.target.value)}
-                        className="w-full sm:w-auto bg-brand-primary border border-brand-text-secondary/50 rounded-lg px-4 py-2 text-white placeholder-brand-text-secondary focus:ring-brand-accent focus:border-brand-accent transition"
+                        className="w-full sm:w-auto bg-brand-secondary/50 border border-brand-border rounded-xl px-4 py-2.5 text-white text-sm focus:ring-2 focus:ring-brand-accent outline-none"
                     >
                         <option value="all">{t('dateFilters.all')}</option>
                         <option value="this_month">{t('dateFilters.month')}</option>
@@ -128,91 +127,98 @@ const InvoiceList: React.FC = () => {
                         placeholder={t('invoices.searchPlaceholder')}
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
-                        className="w-full sm:w-48 bg-brand-primary border border-brand-text-secondary/50 rounded-lg px-4 py-2 text-white placeholder-brand-text-secondary focus:ring-brand-accent focus:border-brand-accent transition"
+                        className="w-full sm:w-64 bg-brand-secondary/50 border border-brand-border rounded-xl px-4 py-2.5 text-white placeholder-brand-text-secondary text-sm focus:ring-2 focus:ring-brand-accent outline-none"
                     />
+                </div>
+            </div>
+
+            {filteredInvoices.length === 0 ? (
+                <div className="text-center py-16 bg-brand-surface border border-brand-border rounded-2xl backdrop-blur-md">
+                    <div className="w-16 h-16 bg-brand-secondary/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <PlusIcon />
+                    </div>
+                    <h3 className="text-lg font-bold text-white">{t('invoices.noInvoices')}</h3>
+                    <p className="text-sm text-brand-text-secondary max-w-xs mx-auto mt-2 mb-6">{t('invoices.noInvoicesDescription')}</p>
                     <button
                         onClick={handleOpenNewModal}
                         type="button"
-                        className="px-4 py-2 bg-brand-accent text-white rounded-lg font-semibold hover:bg-opacity-80 transition duration-300 shadow-glow flex items-center justify-center gap-2"
+                        className="px-6 py-2.5 bg-brand-accent hover:bg-brand-accent-dark text-white rounded-xl font-semibold transition duration-300 shadow-glow flex items-center justify-center gap-2 mx-auto"
                     >
-                        <PlusIcon />
-                        <span className="hidden sm:inline">{t('invoices.newInvoice')}</span>
+                        <PlusIcon /> {t('invoices.addNewInvoice')}
                     </button>
                 </div>
-            </div>
-            <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                    <thead className="border-b border-brand-text-secondary/20">
-                        <tr>
-                            <th className="p-3 text-sm font-semibold text-brand-text-secondary">{t('invoices.provider')}</th>
-                            <th className="p-3 text-sm font-semibold text-brand-text-secondary hidden md:table-cell">{t('invoices.category')}</th>
-                            <th className="p-3 text-sm font-semibold text-brand-text-secondary hidden sm:table-cell">{t('invoices.date')}</th>
-                            <th className="p-3 text-sm font-semibold text-brand-text-secondary text-right">{t('invoices.total')}</th>
-                            <th className="p-3 text-sm font-semibold text-brand-text-secondary text-center">{t('invoices.actions')}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredInvoices.map(invoice => (
-                            <tr 
-                                key={invoice.id} 
-                                className="border-b border-brand-primary hover:bg-brand-primary/50 cursor-pointer"
-                                onClick={() => setSelectedInvoice(invoice)}
-                            >
-                                <td className="p-3 font-medium text-white">
-                                    <div className="flex items-center gap-2">
-                                        <span>{invoice.provider}</span>
-                                        {invoice.isRecurring && (
-                                            <div className="text-brand-text-secondary" title={t('invoices.recurringInfo', { frequency: t(`modals.${invoice.recurringFrequency}`) })}>
-                                                <RepeatIcon />
-                                            </div>
-                                        )}
-                                    </div>
-                                </td>
-                                <td className="p-3 text-brand-text-secondary hidden md:table-cell">{invoice.category}</td>
-                                <td className="p-3 text-brand-text-secondary hidden sm:table-cell">{formatDate(invoice.date)}</td>
-                                <td className="p-3 text-white font-semibold text-right">{formatCurrency(invoice.total)}</td>
-                                <td className="p-3 text-center">
-                                    <div className="flex justify-center items-center gap-2">
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleOpenEditModal(invoice);
-                                            }}
-                                            className="text-brand-accent hover:text-opacity-80 p-1 rounded-full hover:bg-brand-accent/10"
-                                            aria-label={`Edit invoice from ${invoice.provider}`}
-                                        >
-                                            <EditIcon />
-                                        </button>
-                                        <button 
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleOpenDeleteConfirm(invoice);
-                                            }} 
-                                            className="text-red-400 hover:text-red-300 p-1 rounded-full hover:bg-red-500/10"
-                                            aria-label={`Delete invoice from ${invoice.provider}`}
-                                        >
-                                            <TrashIcon />
-                                        </button>
-                                    </div>
-                                </td>
+            ) : (
+                <div className="overflow-x-auto">
+                    <table className="w-full border-separate border-spacing-y-3">
+                        <thead>
+                            <tr className="text-brand-text-secondary text-xs uppercase tracking-wider">
+                                <th className="px-4 pb-2 text-left">{t('invoices.provider')}</th>
+                                <th className="px-4 pb-2 text-left hidden md:table-cell">{t('invoices.category')}</th>
+                                <th className="px-4 pb-2 text-left hidden sm:table-cell">{t('invoices.date')}</th>
+                                <th className="px-4 pb-2 text-right">{t('invoices.total')}</th>
+                                <th className="px-4 pb-2 text-center">{t('invoices.actions')}</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-                 {filteredInvoices.length === 0 && (
-                    <div className="text-center py-12 text-brand-text-secondary">
-                        <h3 className="text-lg font-semibold">{t('invoices.noInvoices')}</h3>
-                        <p className="text-sm max-w-md mx-auto my-2">{t('invoices.noInvoicesDescription')}</p>
-                        <button
-                            onClick={handleOpenNewModal}
-                            type="button"
-                            className="mt-4 px-4 py-2 bg-brand-accent text-white rounded-lg font-semibold hover:bg-opacity-80 transition duration-300 shadow-glow flex items-center justify-center gap-2 mx-auto"
-                        >
-                            <PlusIcon /> {t('invoices.addNewInvoice')}
-                        </button>
-                    </div>
-                )}
-            </div>
+                        </thead>
+                        <tbody>
+                            {filteredInvoices.map(invoice => (
+                                <tr 
+                                    key={invoice.id} 
+                                    className="bg-brand-surface backdrop-blur-md hover:bg-brand-secondary/80 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md group"
+                                    onClick={() => setSelectedInvoice(invoice)}
+                                >
+                                    <td className="p-4 rounded-l-xl border-y border-l border-brand-border group-hover:border-brand-accent/30">
+                                        <div className="flex flex-col">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-bold text-white text-sm sm:text-base">{invoice.provider}</span>
+                                                {invoice.isRecurring && (
+                                                    <div className="text-brand-accent" title={t('invoices.recurringInfo', { frequency: t(`modals.${invoice.recurringFrequency}`) })}>
+                                                        <RepeatIcon />
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <span className="text-xs text-brand-text-secondary sm:hidden">{formatDate(invoice.date)}</span>
+                                        </div>
+                                    </td>
+                                    <td className="p-4 border-y border-brand-border group-hover:border-brand-accent/30 hidden md:table-cell">
+                                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-brand-text-secondary border border-white/10">
+                                            {invoice.category}
+                                        </span>
+                                    </td>
+                                    <td className="p-4 border-y border-brand-border group-hover:border-brand-accent/30 text-sm text-brand-text-secondary hidden sm:table-cell">
+                                        {formatDate(invoice.date)}
+                                    </td>
+                                    <td className="p-4 border-y border-brand-border group-hover:border-brand-accent/30 text-right">
+                                        <span className="font-mono font-bold text-white">{formatCurrency(invoice.total)}</span>
+                                    </td>
+                                    <td className="p-4 rounded-r-xl border-y border-r border-brand-border group-hover:border-brand-accent/30 text-center">
+                                        <div className="flex justify-center items-center gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleOpenEditModal(invoice);
+                                                }}
+                                                className="text-brand-accent-light hover:text-white p-2 rounded-lg hover:bg-brand-accent"
+                                            >
+                                                <EditIcon />
+                                            </button>
+                                            <button 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleOpenDeleteConfirm(invoice);
+                                                }} 
+                                                className="text-red-400 hover:text-white p-2 rounded-lg hover:bg-red-500"
+                                            >
+                                                <TrashIcon />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+            
             <InvoiceDetailModal invoice={selectedInvoice} onClose={() => setSelectedInvoice(null)} />
             <ManualInvoiceModal 
                 isOpen={isManualModalOpen}
