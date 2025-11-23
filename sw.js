@@ -1,9 +1,11 @@
-const CACHE_NAME = 'cashhome-v6'; // Incremented version to force update
+const CACHE_NAME = 'cashhome-v7'; // Incrementa la versión
 const urlsToCache = [
   '/',
   '/index.html',
-  '/index.tsx', // Critical for offline check
+  '/index.tsx',
   '/icon.svg',
+  '/icon-192.png', // [AGREGAR ESTO]
+  '/icon-512.png', // [AGREGAR ESTO]
   '/manifest.json'
 ];
 
